@@ -1,8 +1,8 @@
-package com.repairmatch.service;
+package com.devdash.backend.service;
 
-import com.repairmatch.dto.*;
-import com.repairmatch.entity.User;
-import com.repairmatch.repository.UserRepository;
+import com.devdash.dto.*;
+import com.devdash.backend.entity.User;
+import com.devdash.backend.repository.UserRepository;
 import com.repairmatch.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

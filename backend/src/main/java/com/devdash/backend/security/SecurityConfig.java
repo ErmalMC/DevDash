@@ -1,4 +1,4 @@
-package com.repairmatch.security;
+package com.devdash.backend.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

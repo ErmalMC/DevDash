@@ -1,7 +1,7 @@
-package com.repairmatch.controller;
+package com.devdash.backend.controller
 
-import com.repairmatch.dto.*;
-import com.repairmatch.service.AuthService;
+import com.devdash.backend.entity.*;
+import com.devdash.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

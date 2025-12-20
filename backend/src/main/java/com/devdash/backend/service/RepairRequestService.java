@@ -1,8 +1,8 @@
-package com.repairmatch.service;
+package com.devdash.backend.service;
 
-import com.repairmatch.dto.*;
-import com.repairmatch.entity.*;
-import com.repairmatch.repository.*;
+import com.devdash.backend.entity.*;
+import com.devdash.backend.entity.*;
+import com.devdash.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

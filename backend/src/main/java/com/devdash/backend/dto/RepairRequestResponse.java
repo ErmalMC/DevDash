@@ -1,6 +1,6 @@
-package com.repairmatch.dto;
+package com.devdash.backend.entity;
 
-import com.repairmatch.entity.RequestStatus;
+import com.devdash.backend.entity.RequestStatus;
 import lombok.*;
 
 import java.util.List;

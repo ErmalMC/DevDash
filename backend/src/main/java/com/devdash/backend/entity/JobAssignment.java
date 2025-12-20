@@ -1,4 +1,4 @@
-package com.repairmatch.entity;
+package com.devdash.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

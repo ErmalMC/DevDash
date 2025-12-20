@@ -1,6 +1,6 @@
-package com.repairmatch.dto;
+package com.devdash.backend.entity;
 
-import com.repairmatch.entity.UserRole;
+import com.devdash.backend.entity.UserRole;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.repairmatch.dto;
+package com.devdash.backend.entity;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

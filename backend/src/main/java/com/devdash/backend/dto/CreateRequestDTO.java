@@ -1,7 +1,7 @@
-package com.repairmatch.dto;
+package com.devdash.backend.entity;
 
-import com.repairmatch.entity.SkillCategory;
-import com.repairmatch.entity.Urgency;
+import com.devdash.backend.entity.SkillCategory;
+import com.devdash.backend.entity.Urgency;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 

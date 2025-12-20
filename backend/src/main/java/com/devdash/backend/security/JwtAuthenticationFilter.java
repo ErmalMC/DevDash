@@ -1,7 +1,7 @@
-package com.repairmatch.security;
+package com.devdash.backend.security;
 
-import com.repairmatch.entity.User;
-import com.repairmatch.repository.UserRepository;
+import com.devdash.backend.entity.User;
+import com.devdash.backend.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
-package com.repairmatch.repository;
+package com.devdash.backend.repository;
 
-import com.repairmatch.entity.RepairRequest;
-import com.repairmatch.entity.RequestStatus;
+import com.devdash.backend.entity.RepairRequest;
+import com.devdash.backend.entity.RequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

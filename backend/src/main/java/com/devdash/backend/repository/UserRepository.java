@@ -1,6 +1,6 @@
-package com.repairmatch.repository;
+package com.devdash.backend.repository;
 
-import com.repairmatch.entity.User;
+import com.devdash.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
