@@ -3,10 +3,9 @@ package com.devdash.backend.service;
 import com.devdash.backend.dto.AuthResponse;
 import com.devdash.backend.dto.LoginDTO;
 import com.devdash.backend.dto.RegisterDTO;
-import com.devdash.dto.*;
 import com.devdash.backend.entity.User;
 import com.devdash.backend.repository.UserRepository;
-import com.repairmatch.security.JwtTokenProvider;
+import com.devdash.backend.security.JwtTokenProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,16 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public AuthResponse register(@Valid RegisterDTO dto) {
         // Validate uniqueness
-        if (userRepo.existsByEmail(dto.getEmail())) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalStateException("Email already registered");
         }
-        if (userRepo.existsByPhoneNumber(dto.getPhoneNumber())) {
+        if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
             throw new IllegalStateException("Phone number already registered");
         }
 
@@ -38,13 +37,13 @@ public class AuthService {
                 .email(dto.getEmail())
                 .phoneNumber(dto.getPhoneNumber())
                 .passwordHash(passwordEncoder.encode(dto.getPassword()))
-                .isVerified(true) // Mock verification for MVP
+                .isVerified(false)
                 .build();
 
-        user = userRepo.save(user);
+        user = userRepository.save(user);
 
         // Generate token
-        String token = tokenProvider.generateToken(user);
+        String token = jwtTokenProvider.generateToken(user);
 
         return AuthResponse.builder()
                 .token(token)
@@ -56,14 +55,14 @@ public class AuthService {
     }
 
     public AuthResponse login(@Valid LoginDTO dto) {
-        User user = userRepo.findByEmail(dto.getEmail())
+        User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalStateException("Invalid credentials"));
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPasswordHash())) {
             throw new IllegalStateException("Invalid credentials");
         }
 
-        String token = tokenProvider.generateToken(user);
+        String token = jwtTokenProvider.generateToken(user);
 
         return AuthResponse.builder()
                 .token(token)
