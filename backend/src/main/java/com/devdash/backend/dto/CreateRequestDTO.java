@@ -1,4 +1,4 @@
-package com.devdash.backend.entity;
+package com.devdash.backend.dto;
 
 import com.devdash.backend.entity.SkillCategory;
 import com.devdash.backend.entity.Urgency;

@@ -1,6 +1,8 @@
-package com.devdash.backend.controller
+package com.devdash.backend.controller;
 
-import com.devdash.backend.entity.*;
+import com.devdash.backend.dto.AuthResponse;
+import com.devdash.backend.dto.LoginDTO;
+import com.devdash.backend.dto.RegisterDTO;
 import com.devdash.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

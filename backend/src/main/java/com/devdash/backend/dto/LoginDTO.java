@@ -1,4 +1,4 @@
-package com.devdash.backend.entity;
+package com.devdash.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

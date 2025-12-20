@@ -1,9 +1,13 @@
 package com.devdash.backend.service;
 
+import com.devdash.backend.dto.AuthResponse;
+import com.devdash.backend.dto.LoginDTO;
+import com.devdash.backend.dto.RegisterDTO;
 import com.devdash.dto.*;
 import com.devdash.backend.entity.User;
 import com.devdash.backend.repository.UserRepository;
 import com.repairmatch.security.JwtTokenProvider;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
-    public AuthResponse register(RegisterDTO dto) {
+    public AuthResponse register(@Valid RegisterDTO dto) {
         // Validate uniqueness
         if (userRepo.existsByEmail(dto.getEmail())) {
             throw new IllegalStateException("Email already registered");
@@ -51,7 +55,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse login(LoginDTO dto) {
+    public AuthResponse login(@Valid LoginDTO dto) {
         User user = userRepo.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalStateException("Invalid credentials"));
 
