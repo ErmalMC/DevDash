@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -55,8 +56,9 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Long extractUserId(String token) {
-        return extractClaim(token, claims -> claims.get("userId", Long.class));
+    public UUID extractUserId(String token) {
+        String userId = extractClaim(token, claims -> claims.get("userId", String.class));
+        return userId != null ? UUID.fromString(userId) : null;
     }
 
     public String extractRole(String token) {
@@ -99,5 +101,9 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public UUID getUserIdFromToken(String jwt) {
+        return extractUserId(jwt);
     }
 }

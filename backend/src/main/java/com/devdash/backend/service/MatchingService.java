@@ -1,6 +1,6 @@
 package com.devdash.backend.service;
 
-import com.devdash.backend.entity.WorkerMatchDTO;
+import com.devdash.backend.dto.WorkerMatchDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
 import lombok.RequiredArgsConstructor;

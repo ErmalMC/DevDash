@@ -1,7 +1,6 @@
 package com.devdash.backend.service;
 
 import com.devdash.backend.dto.AvailabilitySlotDTO;
-import com.devdash.backend.entity.AvailabilitySlotDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
 import jakarta.validation.Valid;

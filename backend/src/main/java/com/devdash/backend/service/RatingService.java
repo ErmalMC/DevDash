@@ -1,7 +1,6 @@
 package com.devdash.backend.service;
 
 import com.devdash.backend.dto.RateJobDTO;
-import com.devdash.backend.entity.RateJobDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
 import jakarta.validation.Valid;

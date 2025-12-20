@@ -1,7 +1,6 @@
 package com.devdash.backend.service;
 
 import com.devdash.backend.dto.AcceptRequestDTO;
-import com.devdash.backend.entity.AcceptRequestDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
 import jakarta.validation.Valid;
