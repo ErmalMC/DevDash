@@ -1,5 +1,5 @@
 // src/Main_page.jsx
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from "react";
 import {
     Search,
     MapPin,
@@ -16,95 +16,89 @@ import {
     Menu,
     User,
     Plus,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import "./Main_page.css";
 
 // --- Mock Data (initial) ---
 const initialProblems = [
     {
         id: 1,
-        title: 'Leaky Faucet in Kitchen',
-        location: 'New York, NY',
-        time: '2 hours ago',
+        title: "Leaky Faucet in Kitchen",
+        location: "New York, NY",
+        time: "2 hours ago",
         description:
             "The kitchen faucet has been dripping constantly for two days. Need someone to come and fix it quickly, preferably this week. It's a standard mixer tap.",
-        price: '$150.00',
+        price: "$150.00",
         icon: <Droplet size={18} className="text-blue-500" />,
-        category: 'Plumbing',
+        category: "Plumbing",
     },
     {
         id: 2,
-        title: 'Power Outlet Not Working in Bedroom',
-        location: 'Los Angeles, CA',
-        time: '5 hours ago',
+        title: "Power Outlet Not Working in Bedroom",
+        location: "Los Angeles, CA",
+        time: "5 hours ago",
         description:
-            'One of the power outlets in the master bedroom stopped working. Tried resetting the breaker, but it did not help. Looking for an electrician to diagnose and repair.',
-        price: '$200.00',
+            "One of the power outlets in the master bedroom stopped working. Tried resetting the breaker, but it did not help. Looking for an electrician to diagnose and repair.",
+        price: "$200.00",
         icon: <Wrench size={18} className="text-blue-500" />,
-        category: 'Electrical',
+        category: "Electrical",
     },
     {
         id: 3,
-        title: 'Broken Door Frame Repair',
-        location: 'Houston, TX',
-        time: '2 days ago',
+        title: "Broken Door Frame Repair",
+        location: "Houston, TX",
+        time: "2 days ago",
         description:
-            'The door frame for the bathroom is cracked and needs to be repaired or replaced. It is a standard interior door. Seeking a carpenter for the job.',
-        price: '$250.00',
+            "The door frame for the bathroom is cracked and needs to be repaired or replaced. It is a standard interior door. Seeking a carpenter for the job.",
+        price: "$250.00",
         icon: <Hammer size={18} className="text-blue-500" />,
-        category: 'Carpenter',
+        category: "Carpenter",
     },
     {
         id: 4,
-        title: 'Small Bathroom Repaint Job',
-        location: 'Phoenix, AZ',
-        time: '3 days ago',
+        title: "Small Bathroom Repaint Job",
+        location: "Phoenix, AZ",
+        time: "3 days ago",
         description:
-            'Looking to get my small bathroom repainted. Walls are currently light blue, want to change to off-white. Approximately 5x8 feet in size. Paint provided.',
-        price: '$180.00',
+            "Looking to get my small bathroom repainted. Walls are currently light blue, want to change to off-white. Approximately 5x8 feet in size. Paint provided.",
+        price: "$180.00",
         icon: <PenTool size={18} className="text-blue-500" />,
-        category: 'Painting',
+        category: "Painting",
     },
     {
         id: 5,
-        title: 'Loose Shelf Installation',
-        location: 'Seattle, WA',
-        time: '5 days ago',
+        title: "Loose Shelf Installation",
+        location: "Seattle, WA",
+        time: "5 days ago",
         description:
-            'Need help installing two floating shelves in my living room. Walls are drywall. I have the shelves and hardware, just need someone with tools and experience.',
-        price: '$100.00',
+            "Need help installing two floating shelves in my living room. Walls are drywall. I have the shelves and hardware, just need someone with tools and experience.",
+        price: "$100.00",
         icon: <Wrench size={18} className="text-blue-500" />,
-        category: 'Handyman',
+        category: "Handyman",
     },
     {
         id: 6,
-        title: 'Broken Cabinet Hinge Replacement',
-        location: 'New York, NY',
-        time: '1 week ago',
+        title: "Broken Cabinet Hinge Replacement",
+        location: "New York, NY",
+        time: "1 week ago",
         description:
-            'One of the kitchen cabinet door hinges broke. Need a handyman to replace it. I have a new hinge, just need assistance with the installation.',
-        price: '$80.00',
+            "One of the kitchen cabinet door hinges broke. Need a handyman to replace it. I have a new hinge, just need assistance with the installation.",
+        price: "$80.00",
         icon: <Hammer size={18} className="text-blue-500" />,
-        category: 'Handyman',
+        category: "Handyman",
     },
 ];
 
-const featuredRepairmen = [
-    { name: 'John Doe', role: 'Certified Electrician', rating: 4.8, img: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John' },
-    { name: 'Jane Smith', role: 'Master Plumber', rating: 4.9, img: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane' },
-    { name: 'Mike Johnson', role: 'HVAC Specialist', rating: 4.7, img: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike' },
-    { name: 'Emily Davis', role: 'Skilled Carpenter', rating: 4.9, img: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily' },
-];
-
 const categories = [
-    { name: 'Electrician', icon: <Wrench size={16} />, sub: 'All Electrician Services' },
-    { name: 'Plumber', icon: <Droplet size={16} />, sub: 'All Plumber Services' },
-    { name: 'HVAC Technician', icon: <Wind size={16} />, sub: 'All HVAC Technician Services' },
-    { name: 'Carpenter', icon: <Hammer size={16} />, sub: 'All Carpenter Services' },
-    { name: 'Painter', icon: <PenTool size={16} />, sub: 'All Painter Services' },
-    { name: 'Appliance Repair', icon: <LayoutGrid size={16} />, sub: 'All Appliance Repair Services' },
-    { name: 'Handyman', icon: <Wrench size={16} />, sub: 'All Handyman Services' },
-    { name: 'Locksmith', icon: <Lock size={16} />, sub: 'All Locksmith Services' },
+    { name: "Electrician", icon: <Wrench size={16} />, sub: "All Electrician Services" },
+    { name: "Plumber", icon: <Droplet size={16} />, sub: "All Plumber Services" },
+    { name: "HVAC Technician", icon: <Wind size={16} />, sub: "All HVAC Technician Services" },
+    { name: "Carpenter", icon: <Hammer size={16} />, sub: "All Carpenter Services" },
+    { name: "Painter", icon: <PenTool size={16} />, sub: "All Painter Services" },
+    { name: "Appliance Repair", icon: <LayoutGrid size={16} />, sub: "All Appliance Repair Services" },
+    { name: "Handyman", icon: <Wrench size={16} />, sub: "All Handyman Services" },
+    { name: "Locksmith", icon: <Lock size={16} />, sub: "All Locksmith Services" },
 ];
 
 // --- Components ---
@@ -147,11 +141,16 @@ const ProblemCard = ({ problem }) => (
             </div>
         </div>
 
-        <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">{problem.description}</p>
+        <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">
+            {problem.description}
+        </p>
 
         <div className="flex items-center justify-between mt-auto">
             <span className="text-blue-500 font-bold text-lg">{problem.price}</span>
-            <Link to={`/dhandyman/${problem.id}`} className="bg-blue-400 hover:bg-blue-500 text-white text-sm font-bold py-2 px-6 rounded-lg transition-colors">
+            <Link
+                to={`/dhandyman/${problem.id}`}
+                className="bg-blue-400 hover:bg-blue-500 text-white text-sm font-bold py-2 px-6 rounded-lg transition-colors"
+            >
                 Apply to Fix
             </Link>
         </div>
@@ -160,20 +159,20 @@ const ProblemCard = ({ problem }) => (
 
 const categoryToIcon = (catName) => {
     switch (catName) {
-        case 'Plumber':
+        case "Plumber":
             return <Droplet size={18} className="text-blue-500" />;
-        case 'HVAC Technician':
+        case "HVAC Technician":
             return <Wind size={18} className="text-blue-500" />;
-        case 'Carpenter':
+        case "Carpenter":
             return <Hammer size={18} className="text-blue-500" />;
-        case 'Painter':
+        case "Painter":
             return <PenTool size={18} className="text-blue-500" />;
-        case 'Appliance Repair':
+        case "Appliance Repair":
             return <LayoutGrid size={18} className="text-blue-500" />;
-        case 'Locksmith':
+        case "Locksmith":
             return <Lock size={18} className="text-blue-500" />;
-        case 'Electrician':
-        case 'Handyman':
+        case "Electrician":
+        case "Handyman":
         default:
             return <Wrench size={18} className="text-blue-500" />;
     }
@@ -182,17 +181,18 @@ const categoryToIcon = (catName) => {
 // --- Main Page Component ---
 export default function Main_page() {
     const [problems, setProblems] = useState(initialProblems);
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
 
     const [form, setForm] = useState({
-        title: '',
-        category: 'Electrician',
-        location: '',
-        budget: '',
-        description: '',
+        title: "",
+        category: "Electrician",
+        location: "",
+        budget: "",
+        description: "",
     });
-    React.useEffect(() => {
+
+    useEffect(() => {
         const onStorage = (e) => {
             if (e.key === "token") setIsLoggedIn(!!e.newValue);
         };
@@ -213,7 +213,7 @@ export default function Main_page() {
     }, [problems, search]);
 
     const onSubmit = (e) => {
-        e.preventDefault(); // stop page reload [web:168][web:187]
+        e.preventDefault();
 
         if (!form.title.trim() || !form.location.trim() || !form.description.trim()) return;
 
@@ -222,29 +222,27 @@ export default function Main_page() {
             id,
             title: form.title.trim(),
             location: form.location.trim(),
-            time: 'just now',
+            time: "just now",
             description: form.description.trim(),
-            price: form.budget?.trim() ? `$${form.budget.trim()}` : 'Quote',
+            price: form.budget?.trim() ? `$${form.budget.trim()}` : "Quote",
             icon: categoryToIcon(form.category),
             category: form.category,
         };
 
-        setProblems((prev) => [newProblem, ...prev]); // immutable add [web:180]
-        setForm({ title: '', category: 'Electrician', location: '', budget: '', description: '' });
+        setProblems((prev) => [newProblem, ...prev]);
+        setForm({ title: "", category: "Electrician", location: "", budget: "", description: "" });
     };
 
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Top bar */}
-            <header
-                className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
+            <header className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
                 <div className="flex items-center gap-3">
                     <button className="md:hidden">
-                        <Menu size={20}/>
+                        <Menu size={20} />
                     </button>
                     <h1 className="text-xl font-bold text-gray-900">DevDash Repair</h1>
                 </div>
-
 
                 <div className="flex items-center gap-4">
                     {!isLoggedIn && (
@@ -268,43 +266,123 @@ export default function Main_page() {
                             to="/profile"
                             className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg"
                         >
-                            <User size={16}/>
+                            <User size={16} />
                             <span>Profile</span>
                         </Link>
                     )}
                 </div>
             </header>
 
-            {/* 3 columns: Left = Top Repairmen, Middle = Form + Problems, Right = Categories */}
-            <main className="page-main px-6 py-6 grid grid-main gap-6">
+            {/* 3 columns: Left = Categories, Middle = Form + Problems, Right = Overview */}
+            <main className="page-main px-6 py-6 grid-main">
                 {/* LEFT: Categories */}
-                <aside className="panel panel-cats bg-white rounded-xl border border-gray-100 p-4 h-fit"><h2
-                    className="text-sm font-bold text-gray-800 mb-4">Categories</h2>
+                <aside className="panel panel-cats bg-white rounded-xl border border-gray-100 p-4 h-fit">
+                    <h2 className="text-sm font-bold text-gray-800 mb-4">Categories</h2>
                     {categories.map((cat) => (
-                        <SidebarItem key={cat.name} cat={cat}/>
+                        <SidebarItem key={cat.name} cat={cat} />
                     ))}
                 </aside>
-                {/* RIGHT: Featured repairmen */}
-                <aside className="panel panel-top bg-white rounded-xl border border-gray-100 p-4 h-fit">
-                    <h2 className="text-sm font-bold text-gray-800 mb-4">Top Repairmen</h2>
-                    <div className="space-y-4">
-                        {featuredRepairmen.map((r) => (
-                            <div key={r.name} className="flex items-center gap-3">
-                                <img src={r.img} alt={r.name} className="avatar"/>
-                                <div className="flex-1">
-                                    <p className="text-sm font-semibold text-gray-800">{r.name}</p>
-                                    <p className="text-xs text-gray-500">{r.role}</p>
-                                </div>
-                                <div className="flex items-center gap-1 text-xs text-yellow-500">
-                                    <Star size={14}/>
-                                    <span className="font-semibold">{r.rating}</span>
-                                </div>
+
+                {/* MIDDLE: Create Problem + Open Problems */}
+                <section className="space-y-4 panel-problems">
+                    {/* Create problem form */}
+                    <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Plus size={18} className="text-blue-500" />
+                            <h2 className="text-lg font-bold text-gray-900">Create a Problem Request</h2>
+                        </div>
+
+                        <form onSubmit={onSubmit} className="form-grid">
+                            <div className="form-field">
+                                <label className="form-label">Title</label>
+                                <input
+                                    className="form-input"
+                                    value={form.title}
+                                    onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
+                                    placeholder="e.g. Outlet not working"
+                                />
                             </div>
+
+                            <div className="form-field">
+                                <label className="form-label">Category</label>
+                                <select
+                                    className="form-input"
+                                    value={form.category}
+                                    onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
+                                >
+                                    {categories.map((c) => (
+                                        <option key={c.name} value={c.name}>
+                                            {c.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-field">
+                                <label className="form-label">Location</label>
+                                <input
+                                    className="form-input"
+                                    value={form.location}
+                                    onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
+                                    placeholder="e.g. Skopje, MK"
+                                />
+                            </div>
+
+                            <div className="form-field">
+                                <label className="form-label">Budget (USD)</label>
+                                <input
+                                    className="form-input"
+                                    value={form.budget}
+                                    onChange={(e) => setForm((p) => ({ ...p, budget: e.target.value }))}
+                                    placeholder="e.g. 150"
+                                />
+                            </div>
+
+                            <div className="form-field form-field--full">
+                                <label className="form-label">Description</label>
+                                <textarea
+                                    className="form-textarea"
+                                    value={form.description}
+                                    onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                                    placeholder="Describe the issue and any important details..."
+                                    rows={4}
+                                />
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="submit" className="btn-primary">
+                                    Submit Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* Problems header + search */}
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-lg font-bold text-gray-900">Open Problems</h2>
+                        <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-100 rounded-lg text-xs text-gray-600">
+                                <Search size={14} />
+                                <input
+                                    type="text"
+                                    placeholder="Search problems..."
+                                    className="outline-none text-xs bg-transparent"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4">
+                        {filteredProblems.map((p) => (
+                            <ProblemCard key={p.id} problem={p} />
                         ))}
                     </div>
-                </aside>
-                {/*desna strana tips etc*/}
-                <aside className="bg-white rounded-xl border border-gray-100 p-4 h-fit">
+                </section>
+
+                {/* RIGHT: Overview */}
+                <aside className="bg-white rounded-xl border border-gray-100 p-4 h-fit panel-overview">
                     <h2 className="text-sm font-bold text-gray-800 mb-4">Overview</h2>
 
                     <div className="widget">
@@ -336,107 +414,6 @@ export default function Main_page() {
                         </ul>
                     </div>
                 </aside>
-
-                {/* MIDDLE: Create Problem + Open Problems */}
-                <section className="space-y-4 panel-problems">
-                    {/* Create problem form */}
-                    <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Plus size={18} className="text-blue-500"/>
-                            <h2 className="text-lg font-bold text-gray-900">Create a Problem Request</h2>
-                        </div>
-
-                        <form onSubmit={onSubmit} className="form-grid">
-                            <div className="form-field">
-                                <label className="form-label">Title</label>
-                                <input
-                                    className="form-input"
-                                    value={form.title}
-                                    onChange={(e) => setForm((p) => ({...p, title: e.target.value}))}
-                                    placeholder="e.g. Outlet not working"
-                                />
-                            </div>
-
-                            <div className="form-field">
-                                <label className="form-label">Category</label>
-                                <select
-                                    className="form-input"
-                                    value={form.category}
-                                    onChange={(e) => setForm((p) => ({...p, category: e.target.value}))}
-                                >
-                                    {categories.map((c) => (
-                                        <option key={c.name} value={c.name}>
-                                            {c.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="form-field">
-                                <label className="form-label">Location</label>
-                                <input
-                                    className="form-input"
-                                    value={form.location}
-                                    onChange={(e) => setForm((p) => ({...p, location: e.target.value}))}
-                                    placeholder="e.g. Skopje, MK"
-                                />
-                            </div>
-
-                            <div className="form-field">
-                                <label className="form-label">Budget (USD)</label>
-                                <input
-                                    className="form-input"
-                                    value={form.budget}
-                                    onChange={(e) => setForm((p) => ({...p, budget: e.target.value}))}
-                                    placeholder="e.g. 150"
-                                />
-                            </div>
-
-                            <div className="form-field form-field--full">
-                                <label className="form-label">Description</label>
-                                <textarea
-                                    className="form-textarea"
-                                    value={form.description}
-                                    onChange={(e) => setForm((p) => ({...p, description: e.target.value}))}
-                                    placeholder="Describe the issue and any important details..."
-                                    rows={4}
-                                />
-                            </div>
-
-                            <div className="form-actions">
-                                <button type="submit" className="btn-primary">
-                                    Submit Request
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    {/* Problems header + search */}
-                    <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-lg font-bold text-gray-900">Open Problems</h2>
-                        <div className="flex items-center gap-2">
-                            <div
-                                className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-100 rounded-lg text-xs text-gray-600">
-                                <Search size={14}/>
-                                <input
-                                    type="text"
-                                    placeholder="Search problems..."
-                                    className="outline-none text-xs bg-transparent"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-4">
-                        {filteredProblems.map((p) => (
-                            <ProblemCard key={p.id} problem={p}/>
-                        ))}
-                    </div>
-                </section>
-
-
             </main>
         </div>
     );

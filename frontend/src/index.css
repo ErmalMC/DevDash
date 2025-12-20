@@ -22,7 +22,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: var(--bg-body);
   color: var(--text-main);
 }
@@ -62,18 +62,6 @@ body {
 
 .gap-4 {
   gap: 1rem;
-}
-
-.grid {
-  align-items: start;
-}
-.grid-cols-1 {
-  grid-template-columns: 1fr;
-}
-
-/* desktop 3-column layout */
-.grid-cols-layout {
-  grid-template-columns: 260px 1fr 260px;
 }
 
 /* spacing */
@@ -241,7 +229,7 @@ button.bg-blue-400 {
   transition: background-color 0.2s ease-out;
 }
 
-input[type='text'] {
+input[type="text"] {
   border: none;
   outline: none;
   font-size: 0.875rem;
@@ -249,11 +237,11 @@ input[type='text'] {
   background: transparent;
 }
 
-input[type='checkbox'] {
+input[type="checkbox"] {
   accent-color: var(--blue-500);
 }
 
-/* ==== COMPONENT-SPECIFIC ==== */
+/* ==== PAGE STRUCTURE ==== */
 
 /* page wrapper */
 .min-h-screen.bg-gray-50 {
@@ -275,7 +263,32 @@ main.page-main {
   margin: 0 auto;
 }
 
-/* problem card */
+/* 3‑column grid: Categories | Form+Problems | Overview */
+.grid-main {
+  display: grid;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+/* default: stack on mobile */
+.grid-main {
+  grid-template-columns: 1fr;
+}
+
+/* desktop layout */
+@media (min-width: 900px) {
+  .grid-main {
+    grid-template-columns: 220px minmax(0, 1.6fr) 260px;
+  }
+}
+
+.panel-cats,
+.panel-problems,
+.panel-overview {
+  align-self: flex-start;
+}
+
+/* ==== CARDS ==== */
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -301,7 +314,6 @@ main.page-main {
   border: 1px solid #e5e7eb;
 }
 
-
 /* line clamp approximation */
 .line-clamp-3 {
   display: -webkit-box;
@@ -310,29 +322,7 @@ main.page-main {
   overflow: hidden;
 }
 
-/* ==== RESPONSIVE ==== */
-@media (max-width: 50px) {
-  .grid-cols-layout {
-    grid-template-columns: 260px 1fr 220px;
-    align-items: start; /* keep side panels starting at the same top row */
-  }
-
-  main.page-main {
-    padding-inline: 1rem;
-  }
-}
-
-@media (max-width: 50px) {
-  .px-6 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .p-6 {
-    padding: 1.25rem;
-  }
-}
-/* --- Form styles for Create Problem --- */
+/* ==== CREATE PROBLEM FORM ==== */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -398,20 +388,8 @@ main.page-main {
 .btn-primary:hover {
   filter: brightness(0.97);
 }
-.grid-main {
-  display: grid;
-  grid-template-columns: 1fr;     /* default */
-  align-items: start;
-}
-@media (min-width: 900px) {
-  .grid-main {
-    grid-template-columns: 220px 1fr 260px; /* categories smaller on the left */
-    align-items: start;
-  }
-}
-.panel-problems {
-  grid-column: 1 / -1;
-}
+
+/* ==== OVERVIEW WIDGETS ==== */
 .widget {
   border: 1px solid #eef2f7;
   border-radius: 14px;
