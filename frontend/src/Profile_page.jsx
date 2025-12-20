@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
     Search,
     MapPin,
@@ -7,7 +7,7 @@ import {
     CheckCircle2,
     HardHat,
     FileText,
-    Lock,
+    Lock, User,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -59,7 +59,7 @@ const serviceRequests = [
 ];
 
 
-const Header = () => (
+const Header = ({ isLoggedIn }) => (
     <header className="topbar">
         <div className="brand">
             <Link
@@ -74,21 +74,47 @@ const Header = () => (
             <input className="search-input" placeholder="Search handymen or services..." />
         </div>
 
-        <div className="topbar-avatar" />
+        <div className="flex items-center gap-4">
+            {!isLoggedIn && (
+                <Link
+                    to="/register"
+                    className="flex items-center gap-2 text-sm text-gray-700 px-3 py-2 border border-gray-200 rounded-lg"
+                >
+                    Register
+                </Link>
+            )}
+
+            {!isLoggedIn ? (
+                <Link
+                    to="/login"
+                    className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg"
+                >
+                    Login
+                </Link>
+            ) : (
+                <Link
+                    to="/profile"
+                    className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg"
+                >
+                    <User size={16}/>
+                    <span>Profile</span>
+                </Link>
+            )}
+        </div>
     </header>
 );
 
-const Badge = ({ type, text }) => {
+const Badge = ({type, text}) => {
     const Icon = type === 'verified' ? ShieldCheck : CheckCircle2;
     const cls = type === 'verified' ? 'badge badge--verified' : 'badge badge--insured';
     return (
         <span className={cls}>
-      <Icon size={14} />
+      <Icon size={14}/>
             {text}
     </span>
     );
 };
-const RequestedServiceCard = ({ req }) => (
+const RequestedServiceCard = ({req}) => (
     <div className="card request-card">
         <div className="request-top">
             <div>
@@ -100,7 +126,7 @@ const RequestedServiceCard = ({ req }) => (
 
             <div className="request-right">
                 <span className="service-price">{req.budget}</span>
-                <Link to={`/requests/${req.id}`} className="btn btn--ghost btn--sm">
+                <Link to={`/dclient/${req.id}`} className="btn btn--ghost btn--sm">
                     View details
                 </Link>
             </div>
@@ -115,7 +141,10 @@ const ServiceCard = ({ service }) => (
         <div className="service-row">
             <input type="checkbox" className="check" />
             <div className="service-body">
-                <div className="service-top">
+                <div
+                    className="service-top"
+                    style={{ alignItems: "flex-end", display: "flex", justifyContent: "space-between" }}
+                >
                     <h4 className="service-title">{service.title}</h4>
                     <span className="service-price">{service.price}</span>
                 </div>
@@ -125,7 +154,11 @@ const ServiceCard = ({ service }) => (
     </div>
 );
 
+
 export default function Profile_page() {
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
+
+
     return (
         <div className="page">
             <Header />

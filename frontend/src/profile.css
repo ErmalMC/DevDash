@@ -62,6 +62,7 @@ html,body{ margin:0; padding:0; font-family:system-ui,-apple-system,"Segoe UI",s
 .requested{
     height: 500px;
 }
+
 /* Container + grid */
 .container{
     width: 100%;
@@ -188,9 +189,9 @@ html,body{ margin:0; padding:0; font-family:system-ui,-apple-system,"Segoe UI",s
 .service-row{ display:flex; gap: 12px; align-items:flex-start; }
 .check{ width: 18px; height: 18px; accent-color: var(--cyan); margin-top: 2px; cursor:pointer; }
 
-.service-top{ display:flex; align-items:flex-start; justify-content:space-between; gap: 10px; }
+.service-top{ display:flex; align-items:center; justify-content:space-between; gap: 16px; width: 100%;}
 .service-title{ margin:0; font-size: 14px; font-weight: 800; }
-.service-price{ font-size: 13px; font-weight: 900; color:#0891b2; white-space:nowrap; }
+.service-price{ font-size: 13px; font-weight: 900; color:#0891b2; white-space:nowrap; margin-left: auto;margin-right: 0;}
 
 .service-desc{ margin: 6px 0 0 0; font-size: 13px; line-height: 1.45; }
 

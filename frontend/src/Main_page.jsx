@@ -151,9 +151,9 @@ const ProblemCard = ({ problem }) => (
 
         <div className="flex items-center justify-between mt-auto">
             <span className="text-blue-500 font-bold text-lg">{problem.price}</span>
-            <button className="bg-blue-400 hover:bg-blue-500 text-white text-sm font-bold py-2 px-6 rounded-lg transition-colors">
+            <Link to={`/dhandyman/${problem.id}`} className="bg-blue-400 hover:bg-blue-500 text-white text-sm font-bold py-2 px-6 rounded-lg transition-colors">
                 Apply to Fix
-            </button>
+            </Link>
         </div>
     </div>
 );
@@ -183,6 +183,7 @@ const categoryToIcon = (catName) => {
 export default function Main_page() {
     const [problems, setProblems] = useState(initialProblems);
     const [search, setSearch] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
 
     const [form, setForm] = useState({
         title: '',
@@ -191,6 +192,13 @@ export default function Main_page() {
         budget: '',
         description: '',
     });
+    React.useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === "token") setIsLoggedIn(!!e.newValue);
+        };
+        window.addEventListener("storage", onStorage);
+        return () => window.removeEventListener("storage", onStorage);
+    }, []);
 
     const filteredProblems = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -228,22 +236,42 @@ export default function Main_page() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Top bar */}
-            <header className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
+            <header
+                className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
                 <div className="flex items-center gap-3">
                     <button className="md:hidden">
-                        <Menu size={20} />
+                        <Menu size={20}/>
                     </button>
                     <h1 className="text-xl font-bold text-gray-900">DevDash Repair</h1>
                 </div>
 
+
                 <div className="flex items-center gap-4">
-                    <Link
-                        to="/profile"
-                        className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg"
-                    >
-                        <User size={16} />
-                        <span>Profile</span>
-                    </Link>
+                    {!isLoggedIn && (
+                        <Link
+                            to="/register"
+                            className="flex items-center gap-2 text-sm text-gray-700 px-3 py-2 border border-gray-200 rounded-lg"
+                        >
+                            Register
+                        </Link>
+                    )}
+
+                    {!isLoggedIn ? (
+                        <Link
+                            to="/login"
+                            className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg"
+                        >
+                            Login
+                        </Link>
+                    ) : (
+                        <Link
+                            to="/profile"
+                            className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg"
+                        >
+                            <User size={16}/>
+                            <span>Profile</span>
+                        </Link>
+                    )}
                 </div>
             </header>
 
