@@ -1,6 +1,7 @@
 package com.devdash.backend.controller;
 
-import com.devdash.backend.entity.*;
+import com.devdash.backend.dto.AcceptRequestDTO;
+import com.devdash.backend.dto.AvailabilitySlotDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.service.*;
 import jakarta.validation.Valid;

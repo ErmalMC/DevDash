@@ -1,8 +1,10 @@
 package com.devdash.backend.service;
 
-import com.devdash.backend.entity.*;
+import com.devdash.backend.dto.CreateRequestDTO;
+import com.devdash.backend.dto.RepairRequestResponse;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ public class RepairRequestService {
     private final UserRepository userRepo;
     private final MatchingService matchingService;
 
-    public RepairRequestResponse createRequest(CreateRequestDTO dto, UUID citizenId) {
+    public RepairRequestResponse createRequest(@Valid CreateRequestDTO dto, UUID citizenId) {
         User citizen = userRepo.findById(citizenId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
 

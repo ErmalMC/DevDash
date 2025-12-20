@@ -1,8 +1,10 @@
 package com.devdash.backend.service;
 
+import com.devdash.backend.dto.AvailabilitySlotDTO;
 import com.devdash.backend.entity.AvailabilitySlotDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,7 +50,7 @@ public class WorkerService {
         return workerRepo.save(profile);
     }
 
-    public List<AvailabilitySlot> setAvailability(List<AvailabilitySlotDTO> slots, UUID userId) {
+    public List<AvailabilitySlot> setAvailability(@Valid List<AvailabilitySlotDTO> slots, UUID userId) {
         WorkerProfile profile = workerRepo.findByUserId(userId)
                 .orElseThrow(() -> new IllegalStateException("Worker profile not found"));
 

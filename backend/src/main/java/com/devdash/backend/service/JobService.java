@@ -1,8 +1,10 @@
 package com.devdash.backend.service;
 
+import com.devdash.backend.dto.AcceptRequestDTO;
 import com.devdash.backend.entity.AcceptRequestDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ public class JobService {
     private final RepairRequestRepository requestRepo;
     private final WorkerProfileRepository workerRepo;
 
-    public JobAssignment acceptRequest(UUID requestId, AcceptRequestDTO dto, UUID userId) {
+    public JobAssignment acceptRequest(UUID requestId, @Valid AcceptRequestDTO dto, UUID userId) {
         RepairRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new IllegalStateException("Request not found"));
 

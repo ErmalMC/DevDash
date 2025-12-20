@@ -1,8 +1,10 @@
 package com.devdash.backend.service;
 
+import com.devdash.backend.dto.RateJobDTO;
 import com.devdash.backend.entity.RateJobDTO;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class RatingService {
     private final WorkerProfileRepository workerRepo;
     private final UserRepository userRepo;
 
-    public Rating rateJob(UUID requestId, RateJobDTO dto, UUID citizenId) {
+    public Rating rateJob(UUID requestId, @Valid RateJobDTO dto, UUID citizenId) {
         RepairRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new IllegalStateException("Request not found"));
 
