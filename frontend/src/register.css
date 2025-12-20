@@ -1,0 +1,142 @@
+/* Page background and centering */
+.register-page {
+    min-height: 100vh;
+    background-color: #f9fafb;          /* light gray */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Card */
+.register-card {
+    width: 100%;
+    max-width: 420px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px 24px 28px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Header */
+.register-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.register-subtitle {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 20px;
+}
+
+/* Error box */
+.register-error {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background-color: #fef2f2;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    color: #b91c1c;
+}
+
+/* Form */
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Labels + Inputs */
+.register-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.register-input {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.register-input::placeholder {
+    color: #9ca3af;
+}
+
+.register-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.35);
+}
+
+/* Checkbox row */
+.register-terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.register-checkbox {
+    margin-top: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    accent-color: #3b82f6;
+}
+
+/* Links */
+.register-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Submit button */
+.register-button {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    padding: 10px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.register-button:hover {
+    background-color: #3b82f6;
+}
+
+.register-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+}
+
+/* Footer text */
+.register-footer {
+    margin-top: 18px;
+    font-size: 0.875rem;
+    color: #4b5563;
+    text-align: left;
+}
