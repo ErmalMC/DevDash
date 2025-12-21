@@ -29,6 +29,7 @@ const categories = [
     { name: "APPLIANCES", displayName: "Appliance Repair", icon: <LayoutGrid size={16} />, sub: "All Appliance Repair Services" },
     { name: "GENERAL_REPAIR", displayName: "Handyman", icon: <Wrench size={16} />, sub: "All Handyman Services" },
     { name: "LOCKSMITH", displayName: "Locksmith", icon: <Lock size={16} />, sub: "All Locksmith Services" },
+    { name: "Miscellaneous", displayName: "Miscellaneous", icon: <Lock size={16} />, sub: "All Miscellaneous Services" },
 ];
 
 const categoryToIcon = (catName) => {
@@ -81,13 +82,13 @@ const SidebarItem = ({ cat, onCategorySelect, selectedCategory }) => {
                 className={`flex items-center justify-between cursor-pointer mb-2 ${
                     isSelected ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'
                 }`}
-                onClick={() => onCategorySelect(cat.name)}
+                // onClick={() => onCategorySelect(cat.name)}
             >
                 <div className="flex items-center gap-3">
                     <span className="text-blue-400">{cat.icon}</span>
                     <span className="text-sm font-semibold">{cat.displayName}</span>
                 </div>
-                <ChevronUp size={14} className="text-gray-400" />
+                {/*<ChevronUp size={14} className="text-gray-400" />*/}
             </div>
 
             <div className="pl-8">
@@ -284,9 +285,9 @@ export default function Main_page() {
             {/* Top bar */}
             <header className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                    <button className="md:hidden">
-                        <Menu size={20} />
-                    </button>
+                    {/*<button className="md:hidden">*/}
+                    {/*    <Menu size={20} />*/}
+                    {/*</button>*/}
                     <h1 className="text-xl font-bold text-gray-900">DevDash Repair</h1>
                 </div>
 
@@ -347,7 +348,7 @@ export default function Main_page() {
                     {/* Create problem form */}
                     <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
                         <div className="flex items-center gap-2 mb-4">
-                            <Plus size={18} className="text-blue-500" />
+                            {/*<Plus size={18} className="text-blue-500" />*/}
                             <h2 className="text-lg font-bold text-gray-900">Create a Problem Request</h2>
                         </div>
 
