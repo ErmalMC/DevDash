@@ -18,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/worker")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+// ✅ REMOVED @CrossOrigin - CORS is handled globally in SecurityConfig
 public class WorkerController {
 
     private final WorkerService workerService;

@@ -75,31 +75,31 @@ const Header = ({ isLoggedIn }) => (
         </div>
 
         <div className="flex items-center gap-4">
-            {!isLoggedIn && (
-                <Link
-                    to="/register"
-                    className="flex items-center gap-2 text-sm text-gray-700 px-3 py-2 border border-gray-200 rounded-lg"
-                >
-                    Register
-                </Link>
-            )}
+{/*             {!isLoggedIn && ( */}
+{/*                 <Link */}
+{/*                     to="/register" */}
+{/*                     className="flex items-center gap-2 text-sm text-gray-700 px-3 py-2 border border-gray-200 rounded-lg" */}
+{/*                 > */}
+{/*                     Register */}
+{/*                 </Link> */}
+{/*             )} */}
 
-            {!isLoggedIn ? (
-                <Link
-                    to="/login"
-                    className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg"
-                >
-                    Login
-                </Link>
-            ) : (
-                <Link
-                    to="/profile"
-                    className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg"
-                >
-                    <User size={16}/>
-                    <span>Profile</span>
-                </Link>
-            )}
+{/*             {!isLoggedIn ? ( */}
+{/*                 <Link */}
+{/*                     to="/login" */}
+{/*                     className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg" */}
+{/*                 > */}
+{/*                     Login */}
+{/*                 </Link> */}
+{/*             ) : ( */}
+{/*                 <Link */}
+{/*                     to="/profile" */}
+{/*                     className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg" */}
+{/*                 > */}
+{/*                     <User size={16}/> */}
+{/*                     <span>Profile</span> */}
+{/*                 </Link> */}
+{/*             )} */}
         </div>
     </header>
 );

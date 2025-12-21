@@ -288,7 +288,7 @@ export default function Main_page() {
                     {/*<button className="md:hidden">*/}
                     {/*    <Menu size={20} />*/}
                     {/*</button>*/}
-                    <h1 className="text-xl font-bold text-gray-900">DevDash Repair</h1>
+                    <h1 className="text-xl font-bold text-gray-900">HandyConnect</h1>
                 </div>
 
                 <div className="flex items-center gap-4">

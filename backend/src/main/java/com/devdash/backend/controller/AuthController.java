@@ -1,3 +1,5 @@
+package com.devdash.backend.controller;
+
 import com.devdash.backend.dto.AuthResponse;
 import com.devdash.backend.dto.LoginDTO;
 import com.devdash.backend.dto.RegisterDTO;
