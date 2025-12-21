@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "./api/api.js";
-import "./Register.css"; // Reuse Register styles
+import "./register.css"; // Reuse Register styles
 
 export default function Login() {
     const navigate = useNavigate();
