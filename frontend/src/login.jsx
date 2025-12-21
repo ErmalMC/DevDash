@@ -49,7 +49,7 @@ export default function Login() {
             }
 
             // Redirect to main page
-            navigate("/");
+            navigate("/main");
 
         } catch (err) {
             console.error("Login error:", err);

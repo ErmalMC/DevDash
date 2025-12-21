@@ -107,9 +107,9 @@ const RequestedServiceCard = ({req}) => (
 
             <div className="request-right">
                 <span className="service-price">{req.budget}</span>
-                <Link to={`/dclient/${req.id}`} className="btn btn--ghost btn--sm">
-                    View details
-                </Link>
+{/*                 <Link to={`/dclient/${req.id}`} className="btn btn--ghost btn--sm"> */}
+{/*                     View details */}
+{/*                 </Link> */}
             </div>
         </div>
 
@@ -308,14 +308,14 @@ export default function Profile_page() {
                     </div>
 
                     {/* Services Offered (now under Requested) */}
-                    <div className="card">
-                        <h2 className="h2">Services Offered</h2>
-                        <div className="stack">
-                            {services.map((s) => (
-                                <ServiceCard key={s.title} service={s} />
-                            ))}
-                        </div>
-                    </div>
+{/*                     <div className="card"> */}
+{/*                         <h2 className="h2">Services Offered</h2> */}
+{/*                         <div className="stack"> */}
+{/*                             {services.map((s) => ( */}
+{/*                                 <ServiceCard key={s.title} service={s} /> */}
+{/*                             ))} */}
+{/*                         </div> */}
+{/*                     </div> */}
 
                     <div className="card">
                         <h2 className="h2">About {profileData.name}</h2>

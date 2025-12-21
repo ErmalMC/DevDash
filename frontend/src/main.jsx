@@ -19,7 +19,8 @@ createRoot(document.getElementById('root')).render(
     <StrictMode>
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Main_page />} />
+                <Route path="/" element={<Welcome />} />
+                <Route path="/main" element={<Main_page />} />
                 <Route path="/profile" element={<Profile_page />} />
                 <Route path="/dclient" element={<ClientDetailsForJob />} />
                 <Route path="/dhandyman" element={<HandymanJobDetails />} />

@@ -8,6 +8,7 @@ import {
     Wind,
     Hammer,
     PenTool,
+    HardHat,
     LayoutGrid,
     Lock,
     ChevronUp,
@@ -371,6 +372,10 @@ The citizen will review your application and contact you if interested.`;
             {/* Top bar */}
             <header className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
                 <div className="flex items-center gap-3">
+                    <Link
+                                    to="/" className="brand-badge">
+                                    <HardHat size={18} />
+                                </Link>
                     <h1 className="text-xl font-bold text-gray-900">HandyConnect</h1>
                 </div>
 

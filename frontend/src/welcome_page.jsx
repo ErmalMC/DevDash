@@ -72,7 +72,7 @@ export default function WelcomePage() {
             if (user.role === "WORKER") {
                 navigate("/profile");
             } else {
-                navigate("/main");
+                navigate("/welcome");
             }
         }
 
