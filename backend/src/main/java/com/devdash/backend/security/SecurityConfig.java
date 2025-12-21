@@ -30,29 +30,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Enable CORS first
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // Disable CSRF for REST API
                 .csrf(AbstractHttpConfigurer::disable)
-                // Stateless session management
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Configure authorization
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - no authentication required
+                        // Public endpoints - MUST come first
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/worker/requests/open").permitAll()
 
-                        // Role-based endpoints
-                        .requestMatchers("/api/citizen/**").hasAuthority("CITIZEN")
-                        .requestMatchers("/api/worker/**").hasAuthority("WORKER")
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        // For development - allow all API endpoints
+                        .requestMatchers("/api/**").permitAll()
 
-                        // All other requests require authentication
-                        .anyRequest().authenticated()
+                        // All other requests
+                        .anyRequest().permitAll()
                 )
-                // Add JWT filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

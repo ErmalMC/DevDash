@@ -1,5 +1,3 @@
-package com.devdash.backend.controller;
-
 import com.devdash.backend.dto.AuthResponse;
 import com.devdash.backend.dto.LoginDTO;
 import com.devdash.backend.dto.RegisterDTO;
@@ -8,12 +6,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")  // ❌ REMOVE THIS LINE
 public class AuthController {
 
     private final AuthService authService;
