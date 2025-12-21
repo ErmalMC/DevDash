@@ -599,7 +599,9 @@
     </inspection_tool>
     <inspection_tool class="PublicMethodNotExposedInInterface" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="ERRORS_ATTRIBUTES">
       <option name="ignorableAnnotations">
-        <value />
+        <value>
+          <item value="org.springframework.context.annotation.Bean" />
+        </value>
       </option>
       <option name="onlyWarnIfContainingClassImplementsAnInterface" value="false" />
     </inspection_tool>

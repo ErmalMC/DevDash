@@ -50,4 +50,96 @@ public class CitizenController {
         Rating rating = ratingService.rateJob(id, dto, user.getId());
         return ResponseEntity.ok(rating);
     }
+    @GetMapping("/requests/{id}")
+    public ResponseEntity<RepairRequest> getMyRequest(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
+
+        RepairRequest request = repairRequestService.getRequestById(id);
+
+        // Verify this request belongs to the authenticated citizen
+        if (!request.getCitizen().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(request);
+    }
+
+    /**
+     * Get all applications/assignments for a specific request
+     */
+    @GetMapping("/requests/{id}/applications")
+    public ResponseEntity<List<JobAssignment>> getRequestApplications(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
+
+        RepairRequest request = repairRequestService.getRequestById(id);
+
+        // Verify this request belongs to the authenticated citizen
+        if (!request.getCitizen().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<JobAssignment> applications = jobService.getRequestApplications(id);
+        return ResponseEntity.ok(applications);
+    }
+
+    /**
+     * Get a specific job assignment
+     */
+    @GetMapping("/assignments/{id}")
+    public ResponseEntity<JobAssignment> getAssignment(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
+
+        JobAssignment assignment = jobService.getAssignmentById(id);
+
+        // Verify this assignment's request belongs to the authenticated citizen
+        RepairRequest request = repairRequestService.getRequestById(assignment.getRepairRequestId());
+        if (!request.getCitizen().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(assignment);
+    }
+
+    /**
+     * Accept a worker for a job
+     */
+    @PostMapping("/requests/{requestId}/accept/{assignmentId}")
+    public ResponseEntity<Void> acceptWorker(
+            @PathVariable UUID requestId,
+            @PathVariable UUID assignmentId,
+            @AuthenticationPrincipal User user) {
+
+        RepairRequest request = repairRequestService.getRequestById(requestId);
+
+        // Verify this request belongs to the authenticated citizen
+        if (!request.getCitizen().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        jobService.acceptWorkerApplication(requestId, assignmentId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Decline a worker application
+     */
+    @PostMapping("/assignments/{id}/decline")
+    public ResponseEntity<Void> declineWorker(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
+
+        JobAssignment assignment = jobService.getAssignmentById(id);
+        RepairRequest request = repairRequestService.getRequestById(assignment.getRepairRequestId());
+
+        // Verify this assignment's request belongs to the authenticated citizen
+        if (!request.getCitizen().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        jobService.declineWorkerApplication(id);
+        return ResponseEntity.ok().build();
+    }
 }

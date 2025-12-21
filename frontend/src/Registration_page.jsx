@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { authAPI } from "./services/api";
 import "./Register.css";
 
 export default function Register() {
@@ -7,8 +8,10 @@ export default function Register() {
     const [form, setForm] = useState({
         fullName: "",
         email: "",
+        phoneNumber: "",
         password: "",
         confirmPassword: "",
+        role: "CITIZEN", // Default to CITIZEN
         acceptTerms: false,
     });
     const [error, setError] = useState("");
@@ -23,7 +26,8 @@ export default function Register() {
         e.preventDefault();
         setError("");
 
-        if (!form.fullName || !form.email || !form.password || !form.confirmPassword) {
+        // Validation
+        if (!form.fullName || !form.email || !form.phoneNumber || !form.password || !form.confirmPassword) {
             return setError("Please fill in all fields.");
         }
         if (form.password.length < 8) {
@@ -36,12 +40,33 @@ export default function Register() {
             return setError("You must accept the terms to continue.");
         }
 
+        // Phone number validation
+        const phoneRegex = /^\+?[0-9]{10,15}$/;
+        if (!phoneRegex.test(form.phoneNumber.replace(/[\s-]/g, ''))) {
+            return setError("Please enter a valid phone number.");
+        }
+
         try {
             setLoading(true);
-            // await api.post("/auth/register", { fullName: form.fullName, email: form.email, password: form.password });
+
+            // Register via API - matches your RegisterDTO
+            const response = await authAPI.register({
+                fullName: form.fullName,
+                email: form.email,
+                phoneNumber: form.phoneNumber,
+                password: form.password,
+                role: form.role // "CITIZEN" or "WORKER"
+            });
+
+            console.log("Registration successful:", response);
+
+            // Show success and redirect
+            alert("Registration successful! Please log in.");
             navigate("/login");
+
         } catch (err) {
-            setError("Registration failed. Please try again.");
+            console.error("Registration error:", err);
+            setError(err.message || "Registration failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -53,7 +78,7 @@ export default function Register() {
                 <div>
                     <h1 className="register-title">Create account</h1>
                     <p className="register-subtitle">
-                        Sign up to start using HandyConnect.
+                        Sign up to start using DevDash.
                     </p>
                 </div>
 
@@ -72,6 +97,7 @@ export default function Register() {
                             autoComplete="name"
                             className="register-input"
                             placeholder="John Doe"
+                            required
                         />
                     </div>
 
@@ -88,7 +114,42 @@ export default function Register() {
                             autoComplete="email"
                             className="register-input"
                             placeholder="you@example.com"
+                            required
                         />
+                    </div>
+
+                    <div>
+                        <label htmlFor="phoneNumber" className="register-label">
+                            Phone Number
+                        </label>
+                        <input
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            type="tel"
+                            value={form.phoneNumber}
+                            onChange={onChange}
+                            autoComplete="tel"
+                            className="register-input"
+                            placeholder="+38970123456"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="role" className="register-label">
+                            I want to register as
+                        </label>
+                        <select
+                            id="role"
+                            name="role"
+                            value={form.role}
+                            onChange={onChange}
+                            className="register-input"
+                            required
+                        >
+                            <option value="CITIZEN">Citizen (Request Services)</option>
+                            <option value="WORKER">Worker (Provide Services)</option>
+                        </select>
                     </div>
 
                     <div>
@@ -104,6 +165,7 @@ export default function Register() {
                             autoComplete="new-password"
                             className="register-input"
                             placeholder="At least 8 characters"
+                            required
                         />
                     </div>
 
@@ -120,6 +182,7 @@ export default function Register() {
                             autoComplete="new-password"
                             className="register-input"
                             placeholder="Repeat password"
+                            required
                         />
                     </div>
 
@@ -130,18 +193,19 @@ export default function Register() {
                             checked={form.acceptTerms}
                             onChange={onChange}
                             className="register-checkbox"
+                            required
                         />
                         <span>
-              I agree to the{" "}
+                            I agree to the{" "}
                             <a href="/terms" className="register-link">
-                Terms
-              </a>{" "}
+                                Terms
+                            </a>{" "}
                             and{" "}
                             <a href="/privacy" className="register-link">
-                Privacy Policy
-              </a>
-              .
-            </span>
+                                Privacy Policy
+                            </a>
+                            .
+                        </span>
                     </label>
 
                     <button

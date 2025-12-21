@@ -1,6 +1,8 @@
 package com.devdash.backend.service;
 
 import com.devdash.backend.dto.AvailabilitySlotDTO;
+import com.devdash.backend.dto.WorkerProfileDTO;
+import com.devdash.backend.dto.WorkerStats;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.repository.*;
 import jakarta.validation.Valid;
@@ -85,5 +87,189 @@ public class WorkerService {
         return allOpen.stream()
                 .filter(req -> profile.getSkills().contains(req.getCategory()))
                 .collect(Collectors.toList());
+    }
+
+    // ========== NEW METHODS FOR PROFILE PAGE ==========
+
+    /**
+     * Get worker profile as DTO
+     */
+    @Transactional(readOnly = true)
+    public WorkerProfileDTO getWorkerProfile(UUID userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        WorkerProfile profile = workerRepo.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("Worker profile not found"));
+
+        return mapToDTO(user, profile);
+    }
+
+    /**
+     * Update worker profile
+     */
+    public WorkerProfileDTO updateProfile(WorkerProfileDTO dto, UUID userId) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        WorkerProfile profile = workerRepo.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("Worker profile not found"));
+
+        // Update user info
+        user.setFullName(dto.getFullName());
+        user.setEmail(dto.getEmail());
+        user.setPhoneNumber(dto.getPhoneNumber());
+
+        // Update worker profile
+        profile.setServiceRadiusKm(dto.getServiceRadiusKm());
+        profile.setBaseLocationLat(dto.getBaseLocationLat());
+        profile.setBaseLocationLng(dto.getBaseLocationLng());
+        profile.setHourlyRateMin(dto.getHourlyRateMin());
+        profile.setHourlyRateMax(dto.getHourlyRateMax());
+
+        // Update skills if provided
+        if (dto.getSkills() != null && !dto.getSkills().isEmpty()) {
+            profile.setSkills(dto.getSkills());
+        }
+
+        userRepo.save(user);
+        workerRepo.save(profile);
+
+        return mapToDTO(user, profile);
+    }
+
+    /**
+     * Get worker availability
+     */
+    @Transactional(readOnly = true)
+    public List<AvailabilitySlot> getAvailability(UUID userId) {
+        WorkerProfile profile = workerRepo.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("Worker profile not found"));
+
+        return availabilityRepo.findByWorkerId(profile.getId());
+    }
+
+    /**
+     * Get nearby repair requests within specified radius
+     */
+    @Transactional(readOnly = true)
+    public List<RepairRequest> getNearbyRequests(double lat, double lng, int radiusKm, UUID userId) {
+        List<RepairRequest> openRequests = requestRepo.findByStatus(RequestStatus.OPEN);
+
+        return openRequests.stream()
+                .filter(request -> {
+                    double distance = calculateDistance(lat, lng,
+                            request.getLatitude(),
+                            request.getLongitude());
+                    return distance <= radiusKm;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get worker statistics
+     */
+    @Transactional(readOnly = true)
+    public WorkerStats getWorkerStats(UUID userId) {
+        WorkerProfile profile = workerRepo.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("Worker profile not found"));
+
+        List<JobAssignment> allJobs = assignmentRepo.findByWorkerId(profile.getId());
+
+        // Count completed jobs
+        int completedJobs = (int) allJobs.stream()
+                .filter(job -> {
+                    RepairRequest request = requestRepo.findById(job.getRepairRequestId())
+                            .orElse(null);
+                    return request != null && request.getStatus() == RequestStatus.COMPLETED;
+                })
+                .count();
+
+        // Count active jobs
+        int activeJobs = (int) allJobs.stream()
+                .filter(job -> {
+                    RepairRequest request = requestRepo.findById(job.getRepairRequestId())
+                            .orElse(null);
+                    return request != null &&
+                            (request.getStatus() == RequestStatus.ASSIGNED ||
+                                    request.getStatus() == RequestStatus.IN_PROGRESS);
+                })
+                .count();
+
+        // Calculate total earnings
+        double totalEarnings = allJobs.stream()
+                .filter(job -> job.getFinalPrice() != null)
+                .mapToDouble(JobAssignment::getFinalPrice)
+                .sum();
+
+        return WorkerStats.builder()
+                .totalJobsCompleted(completedJobs)
+                .activeJobs(activeJobs)
+                .averageRating(profile.getRatingAverage() != null ? profile.getRatingAverage() : 0.0)
+                .totalReviews(profile.getRatingCount() != null ? profile.getRatingCount() : 0)
+                .totalEarnings(totalEarnings)
+                .build();
+    }
+
+    // ========== HELPER METHODS ==========
+
+    private WorkerProfileDTO mapToDTO(User user, WorkerProfile profile) {
+        return WorkerProfileDTO.builder()
+                .id(profile.getId())
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .serviceRadiusKm(profile.getServiceRadiusKm())
+                .baseLocationLat(profile.getBaseLocationLat())
+                .baseLocationLng(profile.getBaseLocationLng())
+                .hourlyRateMin(profile.getHourlyRateMin())
+                .hourlyRateMax(profile.getHourlyRateMax())
+                .ratingAverage(profile.getRatingAverage())
+                .ratingCount(profile.getRatingCount())
+                .isApproved(profile.getIsApproved())
+                .skills(profile.getSkills())
+                .title(getSkillTitle(profile))
+                .location(profile.getServiceRadiusKm() + " km radius")
+                .about("Experienced professional providing quality service")
+                .build();
+    }
+
+    private String getSkillTitle(WorkerProfile profile) {
+        if (profile.getSkills() == null || profile.getSkills().isEmpty()) {
+            return "Skilled Professional";
+        }
+
+        String primarySkill = profile.getSkills().iterator().next();
+        switch (primarySkill.toUpperCase()) {
+            case "ELECTRICAL": return "Electrician";
+            case "PLUMBING": return "Plumber";
+            case "CARPENTRY": return "Carpenter";
+            case "PAINTING": return "Painter";
+            case "HVAC": return "HVAC Technician";
+            case "APPLIANCES": return "Appliance Repair Specialist";
+            case "LOCKSMITH": return "Locksmith";
+            case "GENERAL_REPAIR": return "Handyman";
+            default: return "Skilled Professional";
+        }
+    }
+
+    /**
+     * Calculate distance between two coordinates using Haversine formula
+     * Returns distance in kilometers
+     */
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int EARTH_RADIUS = 6371; // Radius in kilometers
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return EARTH_RADIUS * c;
     }
 }

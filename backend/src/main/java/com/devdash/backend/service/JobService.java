@@ -38,11 +38,11 @@ public class JobService {
         }
 
         // Validate worker has the required skill
-        if (!worker.getSkills().contains(request.getCategory())) {
+        if (!worker.getSkills().contains(request.getCategory().name())) {
             throw new IllegalStateException("Worker doesn't have required skill");
         }
 
-        // Update request status
+        // Update request status to MATCHED (when worker applies)
         request.setStatus(RequestStatus.MATCHED);
         requestRepo.save(request);
 
@@ -76,5 +76,62 @@ public class JobService {
         request.setStatus(RequestStatus.COMPLETED);
         requestRepo.save(request);
         log.info("Job completed: {}", requestId);
+    }
+
+    /**
+     * Get all applications for a repair request
+     */
+    @Transactional(readOnly = true)
+    public List<JobAssignment> getRequestApplications(UUID requestId) {
+        // Use the new method that returns List instead of Optional
+        return assignmentRepo.findAllByRepairRequestId(requestId);
+    }
+
+    /**
+     * Get a specific job assignment by ID
+     */
+    @Transactional(readOnly = true)
+    public JobAssignment getAssignmentById(UUID assignmentId) {
+        return assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new IllegalStateException("Assignment not found"));
+    }
+
+    /**
+     * Accept a worker's application (citizen accepts worker)
+     */
+    public void acceptWorkerApplication(UUID requestId, UUID assignmentId) {
+        RepairRequest request = requestRepo.findById(requestId)
+                .orElseThrow(() -> new IllegalStateException("Request not found"));
+
+        JobAssignment acceptedAssignment = assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new IllegalStateException("Assignment not found"));
+
+        // Update request status to IN_PROGRESS (citizen accepted worker)
+        request.setStatus(RequestStatus.IN_PROGRESS);
+        requestRepo.save(request);
+
+        // Get all applications for this request and delete the others
+        List<JobAssignment> allApplications = assignmentRepo.findAllByRepairRequestId(requestId);
+
+        for (JobAssignment app : allApplications) {
+            if (!app.getId().equals(assignmentId)) {
+                // Delete other applications
+                assignmentRepo.delete(app);
+            }
+        }
+
+        log.info("Citizen accepted worker {} for request {}",
+                acceptedAssignment.getWorker().getId(), requestId);
+    }
+
+    /**
+     * Decline a worker's application
+     */
+    public void declineWorkerApplication(UUID assignmentId) {
+        JobAssignment assignment = assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new IllegalStateException("Assignment not found"));
+
+        assignmentRepo.delete(assignment);
+        log.info("Worker application {} declined", assignmentId);
     }
 }

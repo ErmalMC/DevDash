@@ -18,7 +18,7 @@ import {
     Plus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { workerAPI, citizenAPI, isAuthenticated } from "./services/api";
+import { workerAPI, citizenAPI, isAuthenticated } from '../src/api';
 import "./Main_page.css";
 
 const categories = [

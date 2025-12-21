@@ -78,7 +78,42 @@ export const citizenAPI = {
             method: "POST",
             body: JSON.stringify(requestData),
         }),
+getMyRequest: async (requestId) => {
+        const response = await api.get(`/citizen/requests/${requestId}`);
+        return response.data;
+    },
 
+    /**
+     * Get all applications/assignments for a specific request
+     */
+    getRequestApplications: async (requestId) => {
+        const response = await api.get(`/citizen/requests/${requestId}/applications`);
+        return response.data;
+    },
+
+    /**
+     * Get a specific job assignment
+     */
+    getAssignment: async (assignmentId) => {
+        const response = await api.get(`/citizen/assignments/${assignmentId}`);
+        return response.data;
+    },
+
+    /**
+     * Accept a worker for a job
+     */
+    acceptWorker: async (requestId, assignmentId) => {
+        const response = await api.post(`/citizen/requests/${requestId}/accept/${assignmentId}`);
+        return response.data;
+    },
+
+    /**
+     * Decline a worker application
+     */
+    declineWorker: async (assignmentId) => {
+        const response = await api.post(`/citizen/assignments/${assignmentId}/decline`);
+        return response.data;
+    },
     // Get my repair requests
     getMyRequests: () => fetchAPI("/citizen/requests/my"),
 
@@ -107,6 +142,11 @@ export const workerAPI = {
         }),
 
     // Get my accepted jobs
+    getWorkerProfileById: async (userId) => {
+            const response = await api.get(`/public/workers/${userId}`);
+            return response.data;
+        },
+
     getMyJobs: () => fetchAPI("/worker/jobs/my"),
 
     // Complete a job
