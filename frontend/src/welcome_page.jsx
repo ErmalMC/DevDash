@@ -4,7 +4,8 @@ import { Wrench, Users, ShieldCheck, Star, HardHat, Search, User } from "lucide-
 import { isAuthenticated } from "./api/api.js";
 import "./welcome.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/api";
+// Use Vite's environment variable syntax
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 const Header = ({ isLoggedIn }) => (
     <header className="topbar">
