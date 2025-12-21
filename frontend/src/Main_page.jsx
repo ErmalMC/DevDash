@@ -21,17 +21,17 @@ import { workerAPI, citizenAPI, isAuthenticated } from './api/api.js';
 import "./Main_page.css";
 
 const categories = [
-    { name: "ELECTRICAL", displayName: "Electrician", icon: <Wrench size={16} />, sub: "All Electrician Services" },
-    { name: "PLUMBING", displayName: "Plumber", icon: <Droplet size={16} />, sub: "All Plumber Services" },
-    { name: "HVAC", displayName: "HVAC Technician", icon: <Wind size={16} />, sub: "All HVAC Technician Services" },
+    { name: "ELECTRICIAN", displayName: "Electrician", icon: <Wrench size={16} />, sub: "All Electrician Services" },
+    { name: "PLUMBER", displayName: "Plumber", icon: <Droplet size={16} />, sub: "All Plumber Services" },  // ✅ PLUMBER not PLUMBING
+    { name: "AC", displayName: "Air Conditioning", icon: <Wind size={16} />, sub: "All AC Services" },
+    { name: "APPLIANCE", displayName: "Appliance Repair", icon: <LayoutGrid size={16} />, sub: "All Appliance Repair Services" },
+    { name: "HVAC", displayName: "HVAC", icon: <Wind size={16} />, sub: "All HVAC Services" },
     { name: "CARPENTRY", displayName: "Carpenter", icon: <Hammer size={16} />, sub: "All Carpenter Services" },
     { name: "PAINTING", displayName: "Painter", icon: <PenTool size={16} />, sub: "All Painter Services" },
-    { name: "APPLIANCES", displayName: "Appliance Repair", icon: <LayoutGrid size={16} />, sub: "All Appliance Repair Services" },
     { name: "GENERAL_REPAIR", displayName: "Handyman", icon: <Wrench size={16} />, sub: "All Handyman Services" },
     { name: "LOCKSMITH", displayName: "Locksmith", icon: <Lock size={16} />, sub: "All Locksmith Services" },
-    { name: "Miscellaneous", displayName: "Miscellaneous", icon: <Lock size={16} />, sub: "All Miscellaneous Services" },
+    { name: "MISCELLANEOUS", displayName: "Miscellaneous", icon: <Lock size={16} />, sub: "All Miscellaneous Services" },
 ];
-
 const categoryToIcon = (catName) => {
     switch (catName) {
         case "PLUMBING":
@@ -45,6 +45,8 @@ const categoryToIcon = (catName) => {
         case "APPLIANCES":
             return <LayoutGrid size={18} className="text-blue-500" />;
         case "LOCKSMITH":
+            return <Lock size={18} className="text-blue-500" />;
+        case "MISCELLANEOUS":
             return <Lock size={18} className="text-blue-500" />;
         case "ELECTRICAL":
         case "GENERAL_REPAIR":

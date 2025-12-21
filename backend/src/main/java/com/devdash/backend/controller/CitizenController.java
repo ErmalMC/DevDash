@@ -16,7 +16,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/citizen")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class CitizenController {
 
     private final RepairRequestService requestService;

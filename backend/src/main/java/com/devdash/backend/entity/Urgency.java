@@ -1,5 +1,5 @@
 package com.devdash.backend.entity;
 
 public enum Urgency {
-    LOW, MEDIUM, HIGH
+    LOW, MEDIUM, HIGH,EMERGENCY
 }
