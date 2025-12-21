@@ -2,6 +2,7 @@ package com.devdash.backend.repository;
 
 import com.devdash.backend.entity.RepairRequest;
 import com.devdash.backend.entity.RequestStatus;
+import com.devdash.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,6 @@ public interface RepairRequestRepository extends JpaRepository<RepairRequest, UU
     @Query("SELECT r FROM RepairRequest r WHERE r.status = 'OPEN' " +
             "ORDER BY r.urgency DESC, r.createdAt ASC")
     List<RepairRequest> findOpenRequestsByPriority();
+
+    List<RepairRequest> findByCitizenOrderByCreatedAtDesc(User citizen);
 }

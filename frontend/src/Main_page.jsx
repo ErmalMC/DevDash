@@ -18,11 +18,12 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { workerAPI, citizenAPI, isAuthenticated } from './api/api.js';
+import WorkerApplicationModal from './WorkerApplicationModal';
 import "./Main_page.css";
 
 const categories = [
     { name: "ELECTRICIAN", displayName: "Electrician", icon: <Wrench size={16} />, sub: "All Electrician Services" },
-    { name: "PLUMBER", displayName: "Plumber", icon: <Droplet size={16} />, sub: "All Plumber Services" },  // ✅ PLUMBER not PLUMBING
+    { name: "PLUMBER", displayName: "Plumber", icon: <Droplet size={16} />, sub: "All Plumber Services" },
     { name: "AC", displayName: "Air Conditioning", icon: <Wind size={16} />, sub: "All AC Services" },
     { name: "APPLIANCE", displayName: "Appliance Repair", icon: <LayoutGrid size={16} />, sub: "All Appliance Repair Services" },
     { name: "HVAC", displayName: "HVAC", icon: <Wind size={16} />, sub: "All HVAC Services" },
@@ -32,9 +33,11 @@ const categories = [
     { name: "LOCKSMITH", displayName: "Locksmith", icon: <Lock size={16} />, sub: "All Locksmith Services" },
     { name: "MISCELLANEOUS", displayName: "Miscellaneous", icon: <Lock size={16} />, sub: "All Miscellaneous Services" },
 ];
+
 const categoryToIcon = (catName) => {
     switch (catName) {
         case "PLUMBING":
+        case "PLUMBER":
             return <Droplet size={18} className="text-blue-500" />;
         case "HVAC":
             return <Wind size={18} className="text-blue-500" />;
@@ -43,12 +46,14 @@ const categoryToIcon = (catName) => {
         case "PAINTING":
             return <PenTool size={18} className="text-blue-500" />;
         case "APPLIANCES":
+        case "APPLIANCE":
             return <LayoutGrid size={18} className="text-blue-500" />;
         case "LOCKSMITH":
             return <Lock size={18} className="text-blue-500" />;
         case "MISCELLANEOUS":
             return <Lock size={18} className="text-blue-500" />;
         case "ELECTRICAL":
+        case "ELECTRICIAN":
         case "GENERAL_REPAIR":
         default:
             return <Wrench size={18} className="text-blue-500" />;
@@ -74,86 +79,6 @@ const formatTimeAgo = (timestamp) => {
     return `${diffDays} days ago`;
 };
 
-// --- Components ---
-const SidebarItem = ({ cat, onCategorySelect, selectedCategory }) => {
-    const isSelected = selectedCategory === cat.name;
-
-    return (
-        <div className="mb-4">
-            <div
-                className={`flex items-center justify-between cursor-pointer mb-2 ${
-                    isSelected ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'
-                }`}
-                // onClick={() => onCategorySelect(cat.name)}
-            >
-                <div className="flex items-center gap-3">
-                    <span className="text-blue-400">{cat.icon}</span>
-                    <span className="text-sm font-semibold">{cat.displayName}</span>
-                </div>
-                {/*<ChevronUp size={14} className="text-gray-400" />*/}
-            </div>
-
-            <div className="pl-8">
-                <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-blue-500">
-                    <input
-                        type="checkbox"
-                        className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500"
-                        checked={isSelected}
-                        onChange={() => onCategorySelect(cat.name)}
-                    />
-                    {cat.sub}
-                </label>
-            </div>
-        </div>
-    );
-};
-
-const ProblemCard = ({ problem }) => (
-    <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-        <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center gap-2">
-                {categoryToIcon(problem.category)}
-                <h3 className="text-lg font-bold text-gray-900">{problem.description?.substring(0, 50) || 'Repair Request'}</h3>
-            </div>
-            <span className={`px-2 py-1 text-xs rounded-full ${
-                problem.urgency === 'EMERGENCY' ? 'bg-red-100 text-red-600' :
-                problem.urgency === 'HIGH' ? 'bg-orange-100 text-orange-600' :
-                problem.urgency === 'MEDIUM' ? 'bg-yellow-100 text-yellow-600' :
-                'bg-green-100 text-green-600'
-            }`}>
-                {problem.urgency}
-            </span>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-            <div className="flex items-center gap-1">
-                <MapPin size={12} />
-                {problem.address}
-            </div>
-            <div className="flex items-center gap-1">
-                <Clock size={12} />
-                {formatTimeAgo(problem.createdAt)}
-            </div>
-        </div>
-
-        <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">
-            {problem.description}
-        </p>
-
-        <div className="flex items-center justify-between mt-auto">
-            <span className="text-sm text-gray-600">
-                Category: <span className="font-semibold">{getCategoryDisplayName(problem.category)}</span>
-            </span>
-            <Link
-                to={`/dhandyman/${problem.id}`}
-                className="bg-blue-400 hover:bg-blue-500 text-white text-sm font-bold py-2 px-6 rounded-lg transition-colors"
-            >
-                Apply to Fix
-            </Link>
-        </div>
-    </div>
-);
-
 // --- Main Page Component ---
 export default function Main_page() {
     const [problems, setProblems] = useState([]);
@@ -163,8 +88,12 @@ export default function Main_page() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(() => isAuthenticated());
 
+    // Modal states
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+
     const [form, setForm] = useState({
-        category: "ELECTRICAL",
+        category: "ELECTRICIAN",
         description: "",
         urgency: "MEDIUM",
         address: "",
@@ -191,21 +120,15 @@ export default function Main_page() {
         try {
             setLoading(true);
             setError(null);
-
-            // Try to fetch open requests (should work even without login after backend update)
             const data = await workerAPI.getOpenRequests();
             setProblems(data || []);
-
         } catch (err) {
             console.error('Error fetching repair requests:', err);
-
-            // If 403, it means the endpoint requires auth
             if (err.message.includes('Access denied') || err.message.includes('403')) {
                 setError('Please log in to view repair requests');
             } else {
                 setError(err.message || 'Failed to load repair requests. Please try again later.');
             }
-
             setProblems([]);
         } finally {
             setLoading(false);
@@ -215,12 +138,10 @@ export default function Main_page() {
     const filteredProblems = useMemo(() => {
         let filtered = problems;
 
-        // Filter by category
         if (selectedCategory) {
             filtered = filtered.filter(p => p.category === selectedCategory);
         }
 
-        // Filter by search
         const q = search.trim().toLowerCase();
         if (q) {
             filtered = filtered.filter((p) => {
@@ -258,12 +179,10 @@ export default function Main_page() {
                 longitude: form.longitude,
             });
 
-            // Add to local state
             setProblems(prev => [newRequest, ...prev]);
 
-            // Reset form
             setForm({
-                category: "ELECTRICAL",
+                category: "ELECTRICIAN",
                 description: "",
                 urgency: "MEDIUM",
                 address: "",
@@ -282,14 +201,176 @@ export default function Main_page() {
         setSelectedCategory(prev => prev === categoryName ? null : categoryName);
     };
 
+    // Handle opening the modal
+    const handleApplyClick = (problem) => {
+        if (!isLoggedIn) {
+            alert('Please login to apply for this job');
+            return;
+        }
+        setSelectedRequest(problem);
+        setIsModalOpen(true);
+    };
+
+    // Handle application submission
+    const handleApplicationSubmit = async (formData) => {
+        try {
+            // Get current user info
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            // Check if user is a worker - if not, use demo mode
+            if (user.role !== 'WORKER') {
+                console.log('🎭 Demo Mode: Simulating application submission');
+
+                // Simulate the application being created
+                const demoApplication = {
+                    id: Date.now(),
+                    repairRequest: selectedRequest,
+                    worker: {
+                        id: user.id,
+                        fullName: user.fullName || 'Demo Worker',
+                        email: user.email
+                    },
+                    message: formData.message,
+                    proposedPrice: formData.proposedPrice ? parseFloat(formData.proposedPrice) : null,
+                    estimatedDuration: formData.estimatedDuration,
+                    status: 'PENDING',
+                    createdAt: new Date().toISOString()
+                };
+
+                // Store in localStorage for demo
+                const existingApps = JSON.parse(localStorage.getItem('demoApplications') || '[]');
+                existingApps.push(demoApplication);
+                localStorage.setItem('demoApplications', JSON.stringify(existingApps));
+
+                // Show success message with details
+                const message = `✅ Application Submitted Successfully! (Demo Mode)
+
+Job: ${selectedRequest.description?.substring(0, 60)}...
+Category: ${getCategoryDisplayName(selectedRequest.category)}
+Location: ${selectedRequest.address}
+
+Your Offer:
+${formData.proposedPrice ? `💰 Price: ${formData.proposedPrice} MKD\n` : ''}${formData.estimatedDuration ? `⏱️ Duration: ${formData.estimatedDuration}\n` : ''}
+📝 Message: "${formData.message}"
+
+✨ This application is now visible in your profile!
+(In production, only WORKER role users can apply)`;
+
+                alert(message);
+                setIsModalOpen(false);
+                setSelectedRequest(null);
+                return;
+            }
+
+            // Real API call for actual workers
+            await workerAPI.applyToRequest(selectedRequest.id, formData);
+
+            // Show success message with details
+            const message = `✅ Application Submitted Successfully!
+
+Job: ${selectedRequest.description?.substring(0, 60)}...
+Category: ${getCategoryDisplayName(selectedRequest.category)}
+Location: ${selectedRequest.address}
+
+Your Offer:
+${formData.proposedPrice ? `💰 Price: ${formData.proposedPrice} MKD\n` : ''}${formData.estimatedDuration ? `⏱️ Duration: ${formData.estimatedDuration}\n` : ''}
+📝 Message: "${formData.message}"
+
+The citizen will review your application and contact you if interested.`;
+
+            alert(message);
+            setIsModalOpen(false);
+            setSelectedRequest(null);
+        } catch (error) {
+            console.error('Error submitting application:', error);
+            alert(error.message || 'Failed to submit application');
+            throw error;
+        }
+    };
+
+    // --- Components ---
+    const SidebarItem = ({ cat, onCategorySelect, selectedCategory }) => {
+        const isSelected = selectedCategory === cat.name;
+
+        return (
+            <div className="mb-4">
+                <div
+                    className={`flex items-center justify-between cursor-pointer mb-2 ${
+                        isSelected ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'
+                    }`}
+                >
+                    <div className="flex items-center gap-3">
+                        <span className="text-blue-400">{cat.icon}</span>
+                        <span className="text-sm font-semibold">{cat.displayName}</span>
+                    </div>
+                </div>
+
+                <div className="pl-8">
+                    <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-blue-500">
+                        <input
+                            type="checkbox"
+                            className="w-3.5 h-3.5 rounded border-gray-300 text-blue-500"
+                            checked={isSelected}
+                            onChange={() => onCategorySelect(cat.name)}
+                        />
+                        {cat.sub}
+                    </label>
+                </div>
+            </div>
+        );
+    };
+
+    const ProblemCard = ({ problem }) => (
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                    {categoryToIcon(problem.category)}
+                    <h3 className="text-lg font-bold text-gray-900">{problem.description?.substring(0, 50) || 'Repair Request'}</h3>
+                </div>
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                    problem.urgency === 'EMERGENCY' ? 'bg-red-100 text-red-600' :
+                    problem.urgency === 'HIGH' ? 'bg-orange-100 text-orange-600' :
+                    problem.urgency === 'MEDIUM' ? 'bg-yellow-100 text-yellow-600' :
+                    'bg-green-100 text-green-600'
+                }`}>
+                    {problem.urgency}
+                </span>
+            </div>
+
+            <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                <div className="flex items-center gap-1">
+                    <MapPin size={12} />
+                    {problem.address}
+                </div>
+                <div className="flex items-center gap-1">
+                    <Clock size={12} />
+                    {formatTimeAgo(problem.createdAt)}
+                </div>
+            </div>
+
+            <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">
+                {problem.description}
+            </p>
+
+            <div className="flex items-center justify-between mt-auto">
+                <span className="text-sm text-gray-600">
+                    Category: <span className="font-semibold">{getCategoryDisplayName(problem.category)}</span>
+                </span>
+                <button
+                    onClick={() => handleApplyClick(problem)}
+                    className="bg-blue-400 hover:bg-blue-500 text-white text-sm font-bold py-2 px-6 rounded-lg transition-colors"
+                >
+                    Apply to Fix
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Top bar */}
             <header className="page-header flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                    {/*<button className="md:hidden">*/}
-                    {/*    <Menu size={20} />*/}
-                    {/*</button>*/}
                     <h1 className="text-xl font-bold text-gray-900">HandyConnect</h1>
                 </div>
 
@@ -350,7 +431,6 @@ export default function Main_page() {
                     {/* Create problem form */}
                     <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
                         <div className="flex items-center gap-2 mb-4">
-                            {/*<Plus size={18} className="text-blue-500" />*/}
                             <h2 className="text-lg font-bold text-gray-900">Create a Problem Request</h2>
                         </div>
 
@@ -512,6 +592,17 @@ export default function Main_page() {
                     </div>
                 </aside>
             </main>
+
+            {/* Worker Application Modal */}
+            <WorkerApplicationModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedRequest(null);
+                }}
+                onSubmit={handleApplicationSubmit}
+                requestDetails={selectedRequest}
+            />
         </div>
     );
 }

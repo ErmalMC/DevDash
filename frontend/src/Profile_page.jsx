@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Search,
     MapPin,
@@ -7,7 +7,10 @@ import {
     CheckCircle2,
     HardHat,
     FileText,
-    Lock, User,
+    Lock,
+    User,
+    Briefcase,
+    MessageSquare,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -37,6 +40,7 @@ const pricingItems = [
     { label: 'Minor Repair', value: '$75 - $150' },
     { label: 'Major Installation', value: 'Quote based' },
 ];
+
 const serviceRequests = [
     {
         id: 101,
@@ -75,31 +79,7 @@ const Header = ({ isLoggedIn }) => (
         </div>
 
         <div className="flex items-center gap-4">
-{/*             {!isLoggedIn && ( */}
-{/*                 <Link */}
-{/*                     to="/register" */}
-{/*                     className="flex items-center gap-2 text-sm text-gray-700 px-3 py-2 border border-gray-200 rounded-lg" */}
-{/*                 > */}
-{/*                     Register */}
-{/*                 </Link> */}
-{/*             )} */}
-
-{/*             {!isLoggedIn ? ( */}
-{/*                 <Link */}
-{/*                     to="/login" */}
-{/*                     className="flex items-center gap-2 text-sm text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg" */}
-{/*                 > */}
-{/*                     Login */}
-{/*                 </Link> */}
-{/*             ) : ( */}
-{/*                 <Link */}
-{/*                     to="/profile" */}
-{/*                     className="flex items-center gap-2 text-sm text-gray-600 px-3 py-2 border border-gray-200 rounded-lg" */}
-{/*                 > */}
-{/*                     <User size={16}/> */}
-{/*                     <span>Profile</span> */}
-{/*                 </Link> */}
-{/*             )} */}
+            {/* Navigation links commented out - can be re-enabled */}
         </div>
     </header>
 );
@@ -109,11 +89,12 @@ const Badge = ({type, text}) => {
     const cls = type === 'verified' ? 'badge badge--verified' : 'badge badge--insured';
     return (
         <span className={cls}>
-      <Icon size={14}/>
+            <Icon size={14}/>
             {text}
-    </span>
+        </span>
     );
 };
+
 const RequestedServiceCard = ({req}) => (
     <div className="card request-card">
         <div className="request-top">
@@ -157,7 +138,17 @@ const ServiceCard = ({ service }) => (
 
 export default function Profile_page() {
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
+    const [applicationCount, setApplicationCount] = useState(0);
+    const [requestCount, setRequestCount] = useState(0);
 
+    // Load application and request counts on mount
+    useEffect(() => {
+        const demoApps = JSON.parse(localStorage.getItem('demoApplications') || '[]');
+        setApplicationCount(demoApps.length);
+
+        const myRequests = JSON.parse(localStorage.getItem('myRepairRequests') || '[]');
+        setRequestCount(myRequests.length);
+    }, []);
 
     return (
         <div className="page">
@@ -192,6 +183,86 @@ export default function Profile_page() {
                             <MapPin size={14} />
                             <span>{profileData.location}</span>
                         </div>
+
+                        {/* NEW: View Applications Button */}
+                        <Link
+                            to="/my-applications"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '12px 20px',
+                                marginTop: '16px',
+                                backgroundColor: '#3b82f6',
+                                color: 'white',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                fontWeight: '600',
+                                fontSize: '14px',
+                                transition: 'background-color 0.2s',
+                                border: 'none',
+                                cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                        >
+                            <Briefcase size={18} />
+                            My Applications
+                            {applicationCount > 0 && (
+                                <span style={{
+                                    backgroundColor: 'white',
+                                    color: '#3b82f6',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px',
+                                    fontSize: '12px',
+                                    fontWeight: '700',
+                                    marginLeft: '4px'
+                                }}>
+                                    {applicationCount}
+                                </span>
+                            )}
+                        </Link>
+
+                        {/* NEW: View My Requests Button */}
+                        <Link
+                            to="/my-requests"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                padding: '12px 20px',
+                                marginTop: '12px',
+                                backgroundColor: '#10b981',
+                                color: 'white',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                fontWeight: '600',
+                                fontSize: '14px',
+                                transition: 'background-color 0.2s',
+                                border: 'none',
+                                cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+                        >
+                            <MessageSquare size={18} />
+                            My Requests
+                            {requestCount > 0 && (
+                                <span style={{
+                                    backgroundColor: 'white',
+                                    color: '#10b981',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px',
+                                    fontSize: '12px',
+                                    fontWeight: '700',
+                                    marginLeft: '4px'
+                                }}>
+                                    {requestCount}
+                                </span>
+                            )}
+                        </Link>
                     </div>
 
                     <div className="card">
@@ -209,7 +280,26 @@ export default function Profile_page() {
                 <section className="col col--mid">
                     {/* Services Requested (moved here) */}
                     <div className="card">
-                        <h2 className="h2">Services Requested</h2>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                            <h2 className="h2">Services Requested</h2>
+                            {applicationCount > 0 && (
+                                <Link
+                                    to="/my-applications"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        color: '#3b82f6',
+                                        fontSize: '14px',
+                                        textDecoration: 'none',
+                                        fontWeight: '600'
+                                    }}
+                                >
+                                    <MessageSquare size={16} />
+                                    View {applicationCount} application{applicationCount !== 1 ? 's' : ''}
+                                </Link>
+                            )}
+                        </div>
                         <div className="stack">
                             {serviceRequests.map((r) => (
                                 <RequestedServiceCard key={r.id} req={r} />
@@ -261,11 +351,8 @@ export default function Profile_page() {
                             *All prices are estimates and may vary based on complexity.
                         </p>
                     </div>
-
-
                 </section>
             </main>
         </div>
     );
 }
-

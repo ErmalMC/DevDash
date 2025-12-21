@@ -23,18 +23,19 @@ public class RepairRequestService {
     private final UserRepository userRepository;
 
     /**
-     * Create a new repair request
+     * ✅ FIXED: Create a new repair request and return the full entity
+     * This ensures the citizen relationship is included
      */
     @Transactional
-    public RepairRequestResponse createRequest(CreateRequestDTO dto, UUID citizenId) {
+    public RepairRequest createRequest(CreateRequestDTO dto, UUID citizenId) {
         User citizen = userRepository.findById(citizenId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         RepairRequest request = RepairRequest.builder()
                 .citizen(citizen)
-                .category(dto.getCategory())  // SkillCategory enum
+                .category(dto.getCategory())
                 .description(dto.getDescription())
-                .urgency(dto.getUrgency())  // Urgency enum
+                .urgency(dto.getUrgency())
                 .address(dto.getAddress())
                 .latitude(dto.getLatitude())
                 .longitude(dto.getLongitude())
@@ -42,9 +43,8 @@ public class RepairRequestService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        RepairRequest saved = repairRequestRepository.save(request);
-
-        return mapToResponse(saved);
+        // ✅ Return the saved entity directly with citizen relationship
+        return repairRequestRepository.save(request);
     }
 
     /**
@@ -69,7 +69,10 @@ public class RepairRequestService {
      */
     @Transactional(readOnly = true)
     public List<RepairRequest> getMyCitizenRequests(UUID citizenId) {
-        return repairRequestRepository.findByCitizenId(citizenId);  // Use existing method
+        User citizen = userRepository.findById(citizenId)
+                .orElseThrow(() -> new RuntimeException("Citizen not found"));
+
+        return repairRequestRepository.findByCitizenOrderByCreatedAtDesc(citizen);
     }
 
     /**
@@ -84,14 +87,18 @@ public class RepairRequestService {
         return repairRequestRepository.save(request);
     }
 
-    // Helper method to map entity to response DTO
+    /**
+     * ✅ KEPT for backward compatibility if needed elsewhere
+     * Helper method to map entity to response DTO
+     */
+    @Deprecated
     private RepairRequestResponse mapToResponse(RepairRequest request) {
         return RepairRequestResponse.builder()
                 .id(request.getId())
                 .requestId(request.getId())
-                .category(request.getCategory().name())  // Convert SkillCategory enum to String
+                .category(request.getCategory().name())
                 .description(request.getDescription())
-                .urgency(request.getUrgency().name())  // Convert Urgency enum to String
+                .urgency(request.getUrgency().name())
                 .address(request.getAddress())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())

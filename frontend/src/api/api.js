@@ -123,8 +123,10 @@ export const citizenAPI = {
         fetchAPI(`/citizen/requests/${requestId}`),
 
     // Get all applications/assignments for a specific request
-    getRequestApplications: (requestId) =>
-        fetchAPI(`/citizen/requests/${requestId}/applications`),
+    getRequestApplications: async (requestId) => {
+        console.log('📬 Fetching applications for request:', requestId);
+        return fetchAPI(`/citizen/requests/${requestId}/applications`);
+    },
 
     // Get a specific job assignment
     getAssignment: (assignmentId) =>
@@ -141,6 +143,22 @@ export const citizenAPI = {
         fetchAPI(`/citizen/assignments/${assignmentId}/decline`, {
             method: "POST",
         }),
+
+    // Accept a worker's application
+    acceptApplication: async (applicationId) => {
+        console.log('✅ Accepting application:', applicationId);
+        return fetchAPI(`/citizen/applications/${applicationId}/accept`, {
+            method: 'POST',
+        });
+    },
+
+    // Decline a worker's application
+    declineApplication: async (applicationId) => {
+        console.log('❌ Declining application:', applicationId);
+        return fetchAPI(`/citizen/applications/${applicationId}/decline`, {
+            method: 'POST',
+        });
+    },
 
     // Get my repair requests
     getMyRequests: () => fetchAPI("/citizen/requests/my"),
@@ -168,6 +186,31 @@ export const workerAPI = {
             method: "POST",
             body: JSON.stringify(jobData),
         }),
+
+    // Apply to a repair request - ✅ FIXED with proper data formatting
+    applyToRequest: async (requestId, applicationData) => {
+        console.log('🔨 Applying to request:', requestId);
+
+        // Format the data properly for backend validation
+        const formattedData = {
+            message: applicationData.message,
+            proposedPrice: applicationData.proposedPrice ? parseFloat(applicationData.proposedPrice) : null,
+            estimatedDuration: applicationData.estimatedDuration || null
+        };
+
+        console.log('📦 Formatted data:', formattedData);
+
+        return fetchAPI(`/worker/requests/${requestId}/apply`, {
+            method: 'POST',
+            body: JSON.stringify(formattedData),
+        });
+    },
+
+    // Get worker's own applications
+    getMyApplications: async () => {
+        console.log('📋 Fetching worker applications');
+        return fetchAPI('/worker/applications');
+    },
 
     // Get worker profile by ID
     getWorkerProfileById: (userId) =>

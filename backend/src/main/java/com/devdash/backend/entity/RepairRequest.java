@@ -1,11 +1,15 @@
 package com.devdash.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import com.devdash.backend.entity.User;
 
+/**
+ * ✅ FIXED: Added @JsonIgnoreProperties to prevent infinite recursion
+ * when serializing the citizen relationship
+ */
 @Entity
 @Table(name = "repair_requests")
 @Data
@@ -13,12 +17,18 @@ import com.devdash.backend.entity.User;
 @AllArgsConstructor
 @Builder
 public class RepairRequest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /**
+     * ✅ FIXED: Changed to EAGER fetch and added JSON handling
+     * This ensures the citizen is loaded when the request is fetched
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "citizen_id", nullable = false)
+    @JsonIgnoreProperties({"password", "repairRequests", "workerProfile"})
     private User citizen;
 
     @Enumerated(EnumType.STRING)

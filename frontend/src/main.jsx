@@ -12,6 +12,8 @@ import HandymanJobDetails from './details_client.jsx';
 import Register from './Registration_page.jsx';
 import Welcome from './welcome_page.jsx';
 import Login from "./login.jsx";
+import MyApplications from './MyApplications.jsx'; // ✅ NEW - Import the applications page
+import MyRequests from './MyRequests.jsx'; // ✅ NEW - Import the requests page
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -24,7 +26,8 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/register" element={<Register/>} />
                 <Route path="/welcome" element={<Welcome/>} />
                 <Route path="/login" element={<Login/>}/>
-
+                <Route path="/my-applications" element={<MyApplications />} /> {/* ✅ NEW - Applications route */}
+                <Route path="/my-requests" element={<MyRequests />} /> {/* ✅ NEW - Requests route */}
             </Routes>
         </BrowserRouter>
     </StrictMode>,
