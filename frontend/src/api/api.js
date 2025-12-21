@@ -1,4 +1,4 @@
-// src/services/api.js
+// src/api/api.js
 // Centralized API service for DevDash backend
 
 // Vite uses import.meta.env instead of process.env
@@ -16,6 +16,9 @@ const getAuthHeaders = () => {
 // Generic fetch wrapper with error handling
 const fetchAPI = async (endpoint, options = {}) => {
     const url = `${API_BASE_URL}${endpoint}`;
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+
     const config = {
         ...options,
         headers: {
@@ -24,8 +27,43 @@ const fetchAPI = async (endpoint, options = {}) => {
         },
     };
 
+    // Debug logging
+    console.log(`🔍 API Request: ${endpoint}`, {
+        method: config.method || 'GET',
+        hasToken: !!token,
+        userRole: user?.role,
+    });
+
     try {
         const response = await fetch(url, config);
+
+        console.log(`📡 API Response: ${endpoint}`, {
+            status: response.status,
+            ok: response.ok
+        });
+
+        // Handle 401 Unauthorized - token expired or invalid
+        if (response.status === 401) {
+            console.warn("⚠️ 401 Unauthorized - Token expired or invalid");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+            throw new Error("Session expired. Please login again.");
+        }
+
+        // Handle 403 Forbidden - user doesn't have permission
+        if (response.status === 403) {
+            console.error("🚫 403 Forbidden - Access Denied", {
+                endpoint,
+                userRole: user?.role,
+                expectedRole: endpoint.includes('/worker/') ? 'WORKER' :
+                    endpoint.includes('/citizen/') ? 'CITIZEN' :
+                        endpoint.includes('/admin/') ? 'ADMIN' : 'unknown',
+                hasToken: !!token,
+            });
+
+            throw new Error(`Access denied. Required role not found. Your role: ${user?.role || 'unknown'}`);
+        }
 
         // Handle non-JSON responses
         const contentType = response.headers.get("content-type");
@@ -44,7 +82,7 @@ const fetchAPI = async (endpoint, options = {}) => {
 
         return data;
     } catch (error) {
-        console.error(`API Error [${endpoint}]:`, error);
+        console.error(`❌ API Error [${endpoint}]:`, error);
         throw error;
     }
 };

@@ -187,12 +187,23 @@ export default function Main_page() {
     const fetchRepairRequests = async () => {
         try {
             setLoading(true);
-            const data = await workerAPI.getOpenRequests();
-            setProblems(data);
             setError(null);
+
+            // Try to fetch open requests (should work even without login after backend update)
+            const data = await workerAPI.getOpenRequests();
+            setProblems(data || []);
+
         } catch (err) {
             console.error('Error fetching repair requests:', err);
-            setError('Failed to load repair requests. Please try again later.');
+
+            // If 403, it means the endpoint requires auth
+            if (err.message.includes('Access denied') || err.message.includes('403')) {
+                setError('Please log in to view repair requests');
+            } else {
+                setError(err.message || 'Failed to load repair requests. Please try again later.');
+            }
+
+            setProblems([]);
         } finally {
             setLoading(false);
         }
@@ -394,9 +405,18 @@ export default function Main_page() {
                             </div>
 
                             <div className="form-actions">
-                                <button type="submit" className="btn-primary" disabled={!isLoggedIn}>
-                                    {isLoggedIn ? 'Submit Request' : 'Login to Submit'}
-                                </button>
+                                {isLoggedIn ? (
+                                    <button type="submit" className="btn-primary">
+                                        Submit Request
+                                    </button>
+                                ) : (
+                                    <Link
+                                        to="/login"
+                                        className="btn-primary inline-block text-center"
+                                    >
+                                        Login to Submit
+                                    </Link>
+                                )}
                             </div>
                         </form>
                     </div>
