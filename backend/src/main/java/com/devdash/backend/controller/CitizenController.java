@@ -1,8 +1,6 @@
 package com.devdash.backend.controller;
 
-import com.devdash.backend.dto.CreateRequestDTO;
-import com.devdash.backend.dto.RateJobDTO;
-import com.devdash.backend.dto.RepairRequestResponse;
+import com.devdash.backend.dto.*;
 import com.devdash.backend.entity.*;
 import com.devdash.backend.service.*;
 import jakarta.validation.Valid;
@@ -23,6 +21,7 @@ public class CitizenController {
 
     private final RepairRequestService requestService;
     private final RatingService ratingService;
+    private final JobService jobService; // ADD THIS
 
     @PostMapping("/requests")
     public ResponseEntity<RepairRequestResponse> createRequest(
@@ -50,12 +49,13 @@ public class CitizenController {
         Rating rating = ratingService.rateJob(id, dto, user.getId());
         return ResponseEntity.ok(rating);
     }
+
     @GetMapping("/requests/{id}")
     public ResponseEntity<RepairRequest> getMyRequest(
             @PathVariable UUID id,
             @AuthenticationPrincipal User user) {
 
-        RepairRequest request = repairRequestService.getRequestById(id);
+        RepairRequest request = requestService.getRequestById(id); // CHANGED from repairRequestService
 
         // Verify this request belongs to the authenticated citizen
         if (!request.getCitizen().getId().equals(user.getId())) {
@@ -73,7 +73,7 @@ public class CitizenController {
             @PathVariable UUID id,
             @AuthenticationPrincipal User user) {
 
-        RepairRequest request = repairRequestService.getRequestById(id);
+        RepairRequest request = requestService.getRequestById(id); // CHANGED from repairRequestService
 
         // Verify this request belongs to the authenticated citizen
         if (!request.getCitizen().getId().equals(user.getId())) {
@@ -95,7 +95,7 @@ public class CitizenController {
         JobAssignment assignment = jobService.getAssignmentById(id);
 
         // Verify this assignment's request belongs to the authenticated citizen
-        RepairRequest request = repairRequestService.getRequestById(assignment.getRepairRequestId());
+        RepairRequest request = requestService.getRequestById(assignment.getRepairRequestId()); // CHANGED from repairRequestService
         if (!request.getCitizen().getId().equals(user.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -112,7 +112,7 @@ public class CitizenController {
             @PathVariable UUID assignmentId,
             @AuthenticationPrincipal User user) {
 
-        RepairRequest request = repairRequestService.getRequestById(requestId);
+        RepairRequest request = requestService.getRequestById(requestId); // CHANGED from repairRequestService
 
         // Verify this request belongs to the authenticated citizen
         if (!request.getCitizen().getId().equals(user.getId())) {
@@ -132,7 +132,7 @@ public class CitizenController {
             @AuthenticationPrincipal User user) {
 
         JobAssignment assignment = jobService.getAssignmentById(id);
-        RepairRequest request = repairRequestService.getRequestById(assignment.getRepairRequestId());
+        RepairRequest request = requestService.getRequestById(assignment.getRepairRequestId()); // CHANGED from repairRequestService
 
         // Verify this assignment's request belongs to the authenticated citizen
         if (!request.getCitizen().getId().equals(user.getId())) {

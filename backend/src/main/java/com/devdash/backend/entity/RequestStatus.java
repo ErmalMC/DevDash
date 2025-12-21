@@ -1,5 +1,5 @@
 package com.devdash.backend.entity;
 
 public enum RequestStatus {
-    OPEN, MATCHED, IN_PROGRESS, COMPLETED, CANCELLED
+    OPEN, MATCHED, ASSIGNED, IN_PROGRESS, COMPLETED, CANCELLED
 }

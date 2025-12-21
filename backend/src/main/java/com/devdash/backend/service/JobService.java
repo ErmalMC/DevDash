@@ -52,7 +52,7 @@ public class JobService {
                 .worker(worker)
                 .scheduledStart(dto.getScheduledStart())
                 .scheduledEnd(dto.getScheduledEnd())
-                .finalPrice(dto.getEstimatedPrice())
+                .finalPrice(dto.getEstimatedPrice().doubleValue())
                 .build();
 
         assignment = assignmentRepo.save(assignment);

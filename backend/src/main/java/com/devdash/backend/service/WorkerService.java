@@ -127,9 +127,12 @@ public class WorkerService {
         profile.setHourlyRateMin(dto.getHourlyRateMin());
         profile.setHourlyRateMax(dto.getHourlyRateMax());
 
-        // Update skills if provided
+        // Update skills if provided - CONVERT String to SkillCategory
         if (dto.getSkills() != null && !dto.getSkills().isEmpty()) {
-            profile.setSkills(dto.getSkills());
+            Set<SkillCategory> skillCategories = dto.getSkills().stream()
+                    .map(skillName -> SkillCategory.valueOf(skillName.toUpperCase()))
+                    .collect(Collectors.toSet());
+            profile.setSkills(skillCategories);
         }
 
         userRepo.save(user);
@@ -185,7 +188,7 @@ public class WorkerService {
                 })
                 .count();
 
-        // Count active jobs
+        // Count active jobs - FIXED: use ASSIGNED instead of incorrect status
         int activeJobs = (int) allJobs.stream()
                 .filter(job -> {
                     RepairRequest request = requestRepo.findById(job.getRepairRequestId())
@@ -214,6 +217,11 @@ public class WorkerService {
     // ========== HELPER METHODS ==========
 
     private WorkerProfileDTO mapToDTO(User user, WorkerProfile profile) {
+        // Convert Set<SkillCategory> to Set<String>
+        Set<String> skillNames = profile.getSkills().stream()
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+
         return WorkerProfileDTO.builder()
                 .id(profile.getId())
                 .userId(user.getId())
@@ -228,7 +236,7 @@ public class WorkerService {
                 .ratingAverage(profile.getRatingAverage())
                 .ratingCount(profile.getRatingCount())
                 .isApproved(profile.getIsApproved())
-                .skills(profile.getSkills())
+                .skills(skillNames)
                 .title(getSkillTitle(profile))
                 .location(profile.getServiceRadiusKm() + " km radius")
                 .about("Experienced professional providing quality service")
@@ -240,16 +248,13 @@ public class WorkerService {
             return "Skilled Professional";
         }
 
-        String primarySkill = profile.getSkills().iterator().next();
+        // Get first skill name
+        String primarySkill = profile.getSkills().iterator().next().name();
         switch (primarySkill.toUpperCase()) {
-            case "ELECTRICAL": return "Electrician";
-            case "PLUMBING": return "Plumber";
-            case "CARPENTRY": return "Carpenter";
-            case "PAINTING": return "Painter";
-            case "HVAC": return "HVAC Technician";
-            case "APPLIANCES": return "Appliance Repair Specialist";
-            case "LOCKSMITH": return "Locksmith";
-            case "GENERAL_REPAIR": return "Handyman";
+            case "ELECTRICIAN": return "Electrician";
+            case "PLUMBER": return "Plumber";
+            case "AC": return "AC Technician";
+            case "APPLIANCE": return "Appliance Repair Specialist";
             default: return "Skilled Professional";
         }
     }

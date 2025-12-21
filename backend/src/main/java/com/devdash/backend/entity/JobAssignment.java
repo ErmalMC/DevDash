@@ -12,23 +12,28 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class JobAssignment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "repair_request_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "worker_id", nullable = false)
     private WorkerProfile worker;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime acceptedAt = LocalDateTime.now();
-
     private LocalDateTime scheduledStart;
     private LocalDateTime scheduledEnd;
-    private Integer finalPrice;
+    private Double finalPrice;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    // ADD THIS METHOD - It's used in CitizenController and WorkerService
+    public UUID getRepairRequestId() {
+        return repairRequest != null ? repairRequest.getId() : null;
+    }
 }

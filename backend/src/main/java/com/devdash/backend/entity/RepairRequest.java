@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.devdash.backend.entity.User;
 
 @Entity
 @Table(name = "repair_requests")

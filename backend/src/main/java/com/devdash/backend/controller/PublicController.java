@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -76,6 +77,11 @@ public class PublicController {
     }
 
     private WorkerProfileDTO mapToDTO(WorkerProfile profile) {
+        // Convert Set<SkillCategory> to Set<String>
+        Set<String> skillNames = profile.getSkills().stream()
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+
         return WorkerProfileDTO.builder()
                 .id(profile.getId())
                 .userId(profile.getUser().getId())
@@ -90,7 +96,7 @@ public class PublicController {
                 .ratingAverage(profile.getRatingAverage())
                 .ratingCount(profile.getRatingCount())
                 .isApproved(profile.getIsApproved())
-                .skills(profile.getSkills())
+                .skills(skillNames)
                 .title(getSkillTitle(profile))
                 .location(profile.getServiceRadiusKm() + " km radius")
                 .build();
@@ -101,16 +107,13 @@ public class PublicController {
             return "Professional Worker";
         }
 
-        String primarySkill = profile.getSkills().iterator().next();
+        // Get first skill and convert to title
+        String primarySkill = profile.getSkills().iterator().next().name();
         switch (primarySkill.toUpperCase()) {
-            case "ELECTRICAL": return "Electrician";
-            case "PLUMBING": return "Plumber";
-            case "CARPENTRY": return "Carpenter";
-            case "PAINTING": return "Painter";
-            case "HVAC": return "HVAC Technician";
-            case "APPLIANCES": return "Appliance Repair Specialist";
-            case "LOCKSMITH": return "Locksmith";
-            case "GENERAL_REPAIR": return "Handyman";
+            case "ELECTRICIAN": return "Electrician";
+            case "PLUMBER": return "Plumber";
+            case "AC": return "AC Technician";
+            case "APPLIANCE": return "Appliance Repair Specialist";
             default: return "Professional Worker";
         }
     }
