@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { HardHat, User, MapPin, Calendar, Clock, Star } from "lucide-react";
-import { citizenAPI, workerAPI, isAuthenticated } from "./services/api";
+import { citizenAPI, workerAPI, isAuthenticated } from "./api/api.js";
 import "./HandymanJobDetails.css";
 
 const ClientDetailsForJob = () => {

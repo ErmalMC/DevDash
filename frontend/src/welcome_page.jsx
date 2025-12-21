@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Wrench, Users, ShieldCheck, Star, HardHat, Search, User } from "lucide-react";
-import { isAuthenticated } from "./services/api";
+import { isAuthenticated } from "./api/api.js";
 import "./welcome.css";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/api";

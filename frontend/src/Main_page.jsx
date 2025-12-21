@@ -11,14 +11,13 @@ import {
     LayoutGrid,
     Lock,
     ChevronUp,
-    Star,
     Clock,
     Menu,
     User,
     Plus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { workerAPI, citizenAPI, isAuthenticated } from '../src/api';
+import { workerAPI, citizenAPI, isAuthenticated } from './api/api.js';
 import "./Main_page.css";
 
 const categories = [
@@ -32,7 +31,7 @@ const categories = [
     { name: "LOCKSMITH", displayName: "Locksmith", icon: <Lock size={16} />, sub: "All Locksmith Services" },
 ];
 
-// --- Helper Functions ---const categoryToIcon = (catName) => {
+const categoryToIcon = (catName) => {
     switch (catName) {
         case "PLUMBING":
             return <Droplet size={18} className="text-blue-500" />;

@@ -1,7 +1,8 @@
 // src/services/api.js
 // Centralized API service for DevDash backend
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/api";
+// Vite uses import.meta.env instead of process.env
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 // Helper to get auth headers
 const getAuthHeaders = () => {
@@ -78,42 +79,31 @@ export const citizenAPI = {
             method: "POST",
             body: JSON.stringify(requestData),
         }),
-getMyRequest: async (requestId) => {
-        const response = await api.get(`/citizen/requests/${requestId}`);
-        return response.data;
-    },
 
-    /**
-     * Get all applications/assignments for a specific request
-     */
-    getRequestApplications: async (requestId) => {
-        const response = await api.get(`/citizen/requests/${requestId}/applications`);
-        return response.data;
-    },
+    // Get a specific request
+    getMyRequest: (requestId) =>
+        fetchAPI(`/citizen/requests/${requestId}`),
 
-    /**
-     * Get a specific job assignment
-     */
-    getAssignment: async (assignmentId) => {
-        const response = await api.get(`/citizen/assignments/${assignmentId}`);
-        return response.data;
-    },
+    // Get all applications/assignments for a specific request
+    getRequestApplications: (requestId) =>
+        fetchAPI(`/citizen/requests/${requestId}/applications`),
 
-    /**
-     * Accept a worker for a job
-     */
-    acceptWorker: async (requestId, assignmentId) => {
-        const response = await api.post(`/citizen/requests/${requestId}/accept/${assignmentId}`);
-        return response.data;
-    },
+    // Get a specific job assignment
+    getAssignment: (assignmentId) =>
+        fetchAPI(`/citizen/assignments/${assignmentId}`),
 
-    /**
-     * Decline a worker application
-     */
-    declineWorker: async (assignmentId) => {
-        const response = await api.post(`/citizen/assignments/${assignmentId}/decline`);
-        return response.data;
-    },
+    // Accept a worker for a job
+    acceptWorker: (requestId, assignmentId) =>
+        fetchAPI(`/citizen/requests/${requestId}/accept/${assignmentId}`, {
+            method: "POST",
+        }),
+
+    // Decline a worker application
+    declineWorker: (assignmentId) =>
+        fetchAPI(`/citizen/assignments/${assignmentId}/decline`, {
+            method: "POST",
+        }),
+
     // Get my repair requests
     getMyRequests: () => fetchAPI("/citizen/requests/my"),
 
@@ -141,12 +131,11 @@ export const workerAPI = {
             body: JSON.stringify(jobData),
         }),
 
-    // Get my accepted jobs
-    getWorkerProfileById: async (userId) => {
-            const response = await api.get(`/public/workers/${userId}`);
-            return response.data;
-        },
+    // Get worker profile by ID
+    getWorkerProfileById: (userId) =>
+        fetchAPI(`/public/workers/${userId}`),
 
+    // Get my accepted jobs
     getMyJobs: () => fetchAPI("/worker/jobs/my"),
 
     // Complete a job
