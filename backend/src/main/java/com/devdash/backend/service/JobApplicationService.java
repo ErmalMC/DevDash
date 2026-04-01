@@ -2,6 +2,9 @@ package com.devdash.backend.service;
 
 import com.devdash.backend.dto.WorkerApplicationDTO;
 import com.devdash.backend.entity.*;
+import com.devdash.backend.exception.ConflictException;
+import com.devdash.backend.exception.ForbiddenOperationException;
+import com.devdash.backend.exception.ResourceNotFoundException;
 import com.devdash.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,25 +31,25 @@ public class JobApplicationService {
     public JobApplication createApplication(UUID repairRequestId, UUID workerId, WorkerApplicationDTO dto) {
         // Get repair request
         RepairRequest request = repairRequestRepository.findById(repairRequestId)
-                .orElseThrow(() -> new RuntimeException("Repair request not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Repair request not found"));
 
         // Check if request is still open
         if (request.getStatus() != RequestStatus.OPEN) {
-            throw new RuntimeException("This repair request is no longer accepting applications");
+            throw new ConflictException("This repair request is no longer accepting applications");
         }
 
         // Get worker
         User worker = userRepository.findById(workerId)
-                .orElseThrow(() -> new RuntimeException("Worker not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Worker not found"));
 
         // Verify user is a worker
         if (worker.getRole() != UserRole.WORKER) {
-            throw new RuntimeException("Only workers can apply to repair requests");
+            throw new ForbiddenOperationException("Only workers can apply to repair requests");
         }
 
         // Check if worker already applied
         if (applicationRepository.existsByRepairRequestIdAndWorkerId(repairRequestId, workerId)) {
-            throw new RuntimeException("You have already applied to this request");
+            throw new ConflictException("You have already applied to this request");
         }
 
         // Create application
@@ -90,16 +93,16 @@ public class JobApplicationService {
     @Transactional
     public JobApplication acceptApplication(UUID applicationId, UUID citizenId) {
         JobApplication application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         // Verify the repair request belongs to this citizen
         if (!application.getRepairRequest().getCitizen().getId().equals(citizenId)) {
-            throw new SecurityException("You don't have permission to accept this application");
+            throw new ForbiddenOperationException("You don't have permission to accept this application");
         }
 
         // Check if application is still pending
         if (application.getStatus() != ApplicationStatus.PENDING) {
-            throw new RuntimeException("This application has already been " + application.getStatus().toString().toLowerCase());
+            throw new ConflictException("This application has already been " + application.getStatus().toString().toLowerCase());
         }
 
         // Update application status
@@ -123,16 +126,16 @@ public class JobApplicationService {
     @Transactional
     public JobApplication declineApplication(UUID applicationId, UUID citizenId) {
         JobApplication application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         // Verify the repair request belongs to this citizen
         if (!application.getRepairRequest().getCitizen().getId().equals(citizenId)) {
-            throw new SecurityException("You don't have permission to decline this application");
+            throw new ForbiddenOperationException("You don't have permission to decline this application");
         }
 
         // Check if application is still pending
         if (application.getStatus() != ApplicationStatus.PENDING) {
-            throw new RuntimeException("This application has already been " + application.getStatus().toString().toLowerCase());
+            throw new ConflictException("This application has already been " + application.getStatus().toString().toLowerCase());
         }
 
         // Update application status

@@ -2,11 +2,14 @@ package com.devdash.backend.controller;
 
 import com.devdash.backend.dto.WorkerProfileDTO;
 import com.devdash.backend.entity.WorkerProfile;
+import com.devdash.backend.exception.ResourceNotFoundException;
 import com.devdash.backend.repository.WorkerProfileRepository;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@Validated
 public class PublicController {
 
     private final WorkerProfileRepository workerProfileRepository;
@@ -27,7 +30,7 @@ public class PublicController {
      */
     @GetMapping("/workers/top")
     public ResponseEntity<List<WorkerProfileDTO>> getTopWorkers(
-            @RequestParam(defaultValue = "4") int limit) {
+            @RequestParam(defaultValue = "4") @Min(1) @Max(20) int limit) {
 
         // Find approved workers sorted by rating
         List<WorkerProfile> topWorkers = workerProfileRepository
@@ -49,16 +52,16 @@ public class PublicController {
     @GetMapping("/workers/search")
     public ResponseEntity<List<WorkerProfileDTO>> searchWorkers(
             @RequestParam(required = false) String skill,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
 
         List<WorkerProfile> workers;
 
-        if (skill != null && !skill.isEmpty()) {
+        if (skill != null && !skill.trim().isEmpty()) {
             workers = workerProfileRepository
                     .findByIsApprovedAndSkillsContaining(
                             true,
-                            skill.toUpperCase(),
+                            skill.trim().toUpperCase(),
                             PageRequest.of(page, size)
                     );
         } else {
@@ -121,7 +124,7 @@ public class PublicController {
     @GetMapping("/workers/{userId}")
     public ResponseEntity<WorkerProfileDTO> getWorkerByUserId(@PathVariable UUID userId) {
         WorkerProfile profile = workerProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Worker profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Worker profile not found"));
 
         WorkerProfileDTO dto = mapToDTO(profile);
         return ResponseEntity.ok(dto);

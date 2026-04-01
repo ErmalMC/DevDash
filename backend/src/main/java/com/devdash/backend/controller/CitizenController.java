@@ -2,6 +2,7 @@ package com.devdash.backend.controller;
 
 import com.devdash.backend.dto.*;
 import com.devdash.backend.entity.*;
+import com.devdash.backend.exception.ForbiddenOperationException;
 import com.devdash.backend.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,12 +57,7 @@ public class CitizenController {
 
         RepairRequest request = requestService.getRequestById(id);
 
-        // Verify this request belongs to the authenticated citizen
-        if (!request.getCitizen().getId().equals(user.getId())) {
-            log.error("🚫 Citizen {} tried to access request {} owned by someone else",
-                    user.getEmail(), id);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        validateOwnership(request, user, id);
 
         return ResponseEntity.ok(request);
     }
@@ -78,12 +74,7 @@ public class CitizenController {
 
         RepairRequest request = requestService.getRequestById(id);
 
-        // Verify this request belongs to the authenticated citizen
-        if (!request.getCitizen().getId().equals(user.getId())) {
-            log.error("🚫 Citizen {} tried to access request {} owned by someone else",
-                    user.getEmail(), id);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        validateOwnership(request, user, id);
 
         List<JobApplication> applications = jobApplicationService.getRequestApplications(id);
         log.info("✅ Found {} applications for request {}", applications.size(), id);
@@ -95,50 +86,29 @@ public class CitizenController {
      * Accept a worker's application
      */
     @PostMapping("/applications/{applicationId}/accept")
-    public ResponseEntity<?> acceptApplication(
+    public ResponseEntity<JobApplication> acceptApplication(
             @PathVariable UUID applicationId,
             @AuthenticationPrincipal User user) {
 
         log.info("✅ Citizen {} accepting application {}", user.getEmail(), applicationId);
-
-        try {
-            JobApplication application = jobApplicationService.acceptApplication(applicationId, user.getId());
-            log.info("✅ Application accepted successfully");
-            return ResponseEntity.ok(application);
-        } catch (SecurityException e) {
-            log.error("🚫 Security error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ErrorResponse(e.getMessage()));
-        } catch (Exception e) {
-            log.error("❌ Error accepting application", e);
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(e.getMessage()));
-        }
+        JobApplication application = jobApplicationService.acceptApplication(applicationId, user.getId());
+        log.info("✅ Application accepted successfully");
+        return ResponseEntity.ok(application);
     }
 
     /**
      * Decline a worker's application
      */
     @PostMapping("/applications/{applicationId}/decline")
-    public ResponseEntity<?> declineApplication(
+    public ResponseEntity<JobApplication> declineApplication(
             @PathVariable UUID applicationId,
             @AuthenticationPrincipal User user) {
 
         log.info("❌ Citizen {} declining application {}", user.getEmail(), applicationId);
 
-        try {
-            JobApplication application = jobApplicationService.declineApplication(applicationId, user.getId());
-            log.info("✅ Application declined successfully");
-            return ResponseEntity.ok(application);
-        } catch (SecurityException e) {
-            log.error("🚫 Security error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ErrorResponse(e.getMessage()));
-        } catch (Exception e) {
-            log.error("❌ Error declining application", e);
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(e.getMessage()));
-        }
+        JobApplication application = jobApplicationService.declineApplication(applicationId, user.getId());
+        log.info("✅ Application declined successfully");
+        return ResponseEntity.ok(application);
     }
 
     /**
@@ -164,9 +134,7 @@ public class CitizenController {
         JobAssignment assignment = jobService.getAssignmentById(id);
         RepairRequest request = requestService.getRequestById(assignment.getRepairRequestId());
 
-        if (!request.getCitizen().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        validateOwnership(request, user, request.getId());
 
         return ResponseEntity.ok(assignment);
     }
@@ -179,9 +147,7 @@ public class CitizenController {
 
         RepairRequest request = requestService.getRequestById(requestId);
 
-        if (!request.getCitizen().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        validateOwnership(request, user, requestId);
 
         jobService.acceptWorkerApplication(requestId, assignmentId);
         return ResponseEntity.ok().build();
@@ -195,19 +161,17 @@ public class CitizenController {
         JobAssignment assignment = jobService.getAssignmentById(id);
         RepairRequest request = requestService.getRequestById(assignment.getRepairRequestId());
 
-        if (!request.getCitizen().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        validateOwnership(request, user, request.getId());
 
         jobService.declineWorkerApplication(id);
         return ResponseEntity.ok().build();
     }
 
-    // ========== HELPER CLASSES ==========
-
-    @lombok.Data
-    @lombok.AllArgsConstructor
-    static class ErrorResponse {
-        private String error;
+    private void validateOwnership(RepairRequest request, User user, UUID requestId) {
+        if (!request.getCitizen().getId().equals(user.getId())) {
+            log.error("Citizen {} tried to access request {} owned by someone else", user.getEmail(), requestId);
+            throw new ForbiddenOperationException("You do not have access to this repair request");
+        }
     }
+
 }

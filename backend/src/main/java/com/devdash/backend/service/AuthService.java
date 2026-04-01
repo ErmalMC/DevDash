@@ -4,6 +4,8 @@ import com.devdash.backend.dto.AuthResponse;
 import com.devdash.backend.dto.LoginDTO;
 import com.devdash.backend.dto.RegisterDTO;
 import com.devdash.backend.entity.User;
+import com.devdash.backend.exception.ConflictException;
+import com.devdash.backend.exception.UnauthorizedException;
 import com.devdash.backend.repository.UserRepository;
 import com.devdash.backend.security.JwtTokenProvider;
 import jakarta.validation.Valid;
@@ -24,10 +26,10 @@ public class AuthService {
     public AuthResponse register(@Valid RegisterDTO dto) {
         // Validate uniqueness
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalStateException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
-            throw new IllegalStateException("Phone number already registered");
+            throw new ConflictException("Phone number already registered");
         }
 
         // Create user
@@ -56,10 +58,10 @@ public class AuthService {
 
     public AuthResponse login(@Valid LoginDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalStateException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPasswordHash())) {
-            throw new IllegalStateException("Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         String token = jwtTokenProvider.generateToken(user);

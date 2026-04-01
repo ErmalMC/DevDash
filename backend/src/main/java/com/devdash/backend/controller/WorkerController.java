@@ -119,34 +119,22 @@ public class WorkerController {
      * POST /api/worker/requests/{requestId}/apply
      */
     @PostMapping("/requests/{requestId}/apply")
-    public ResponseEntity<?> applyToRequest(
+    public ResponseEntity<JobApplication> applyToRequest(
             @PathVariable UUID requestId,
             @Valid @RequestBody WorkerApplicationDTO dto,
             @AuthenticationPrincipal User user) {
 
         log.info("🔨 Worker {} applying to request {}", user.getEmail(), requestId);
 
-        try {
-            // Check if worker already applied
-            if (jobApplicationService.hasWorkerApplied(requestId, user.getId())) {
-                return ResponseEntity.badRequest()
-                        .body(new ErrorResponse("You have already applied to this request"));
-            }
 
-            JobApplication application = jobApplicationService.createApplication(
-                    requestId,
-                    user.getId(),
-                    dto
-            );
+        JobApplication application = jobApplicationService.createApplication(
+                requestId,
+                user.getId(),
+                dto
+        );
 
-            log.info("✅ Application created successfully: {}", application.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(application);
-
-        } catch (Exception e) {
-            log.error("❌ Error creating application", e);
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse(e.getMessage()));
-        }
+        log.info("✅ Application created successfully: {}", application.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(application);
     }
 
     /**
@@ -235,11 +223,4 @@ public class WorkerController {
         return ResponseEntity.ok().build();
     }
 
-    // ========== HELPER CLASSES ==========
-
-    @lombok.Data
-    @lombok.AllArgsConstructor
-    static class ErrorResponse {
-        private String error;
-    }
 }

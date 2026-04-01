@@ -35,15 +35,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - MUST come first
+                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
 
-                        // For development - allow all API endpoints
-                        .requestMatchers("/api/**").permitAll()
+                        // Role-based API boundaries
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/worker/**").hasRole("WORKER")
+                        .requestMatchers("/api/citizen/**").hasRole("CITIZEN")
 
-                        // All other requests
-                        .anyRequest().permitAll()
+                        // Anything else must be authenticated
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -79,7 +82,7 @@ public class SecurityConfig {
         ));
 
         // Expose Authorization header so frontend can read it
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setExposedHeaders(List.of("Authorization"));
 
         // Cache preflight response for 1 hour
         configuration.setMaxAge(3600L);

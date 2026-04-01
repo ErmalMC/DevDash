@@ -3,13 +3,13 @@ package com.devdash.backend.controller;
 import com.devdash.backend.entity.WorkerProfile;
 import com.devdash.backend.service.AdminService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*")
 public class AdminController {
 
     private final AdminService adminService;
@@ -20,6 +20,7 @@ public class AdminController {
     }
 
     @PostMapping("/workers/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<WorkerProfile> approveWorker(@PathVariable UUID id) {
         WorkerProfile profile = adminService.approveWorker(id);
         return ResponseEntity.ok(profile);

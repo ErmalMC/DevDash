@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: devdash-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-devdash}
+      POSTGRES_USER: ${DB_USERNAME:-devdash_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devdash_pass}
+    volumes:
+      - devdash_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-devdash_user} -d ${DB_NAME:-devdash}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  devdash_pg_data:
+
