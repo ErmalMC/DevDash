@@ -14,9 +14,8 @@ import {
     XCircle,
     Wrench
 } from 'lucide-react';
-import { citizenAPI } from './api/api';
-// Commenting out to test if CSS file is the issue
-// import './MyRequests.css';
+import { citizenAPI } from '../../shared/api/apiClient.js';
+import './MyRequestsPage.css';
 
 const MyRequests = () => {
     const [requests, setRequests] = useState([]);

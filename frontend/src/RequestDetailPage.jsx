@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Clock, ArrowLeft, User as UserIcon } from 'lucide-react';
-import { workerAPI, citizenAPI, getUserRole, isAuthenticated } from '../api/api';
-import WorkerApplicationModal from '../components/WorkerApplicationModal';
-import ApplicationsList from '../components/ApplicationsList';
-import './RequestDetailPage.css';
+import { workerAPI, getUserRole, isAuthenticated } from './shared/api/apiClient.js';
+import WorkerApplicationModal from './features/applications/components/WorkerApplicationModal.jsx';
+import ApplicationsList from './features/applications/components/ApplicationsList.jsx';
 
 const RequestDetailPage = () => {
     const { id } = useParams();
@@ -15,7 +14,6 @@ const RequestDetailPage = () => {
     const [error, setError] = useState(null);
     const [showApplicationModal, setShowApplicationModal] = useState(false);
     const [userRole, setUserRole] = useState(null);
-    const [isOwner, setIsOwner] = useState(false);
 
     useEffect(() => {
         fetchRequestDetails();
@@ -202,7 +200,7 @@ const RequestDetailPage = () => {
                 <WorkerApplicationModal
                     isOpen={showApplicationModal}
                     onClose={() => setShowApplicationModal(false)}
-                    request={request}
+                    requestDetails={request}
                     onSubmit={handleApply}
                 />
             )}

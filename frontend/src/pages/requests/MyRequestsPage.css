@@ -1,0 +1,11 @@
+.requests-page {
+    min-height: 100vh;
+    background: #f9fafb;
+}
+
+.loading-state,
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6b7280;
+}

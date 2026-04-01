@@ -1,7 +1,7 @@
 // src/components/ApplicationsList.jsx
 import React, { useState, useEffect } from 'react';
 import { User, Clock, DollarSign, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
-import { citizenAPI } from '../api/api';
+import { citizenAPI } from '../../../shared/api/apiClient.js';
 import './ApplicationsList.css';
 
 const ApplicationsList = ({ requestId }) => {

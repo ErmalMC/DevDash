@@ -67,7 +67,7 @@ const WorkerApplicationModal = ({ isOpen, onClose, onSubmit, requestDetails }) =
                         <p className="preview-description">{requestDetails.description}</p>
                         <div className="preview-meta">
                             <span className="preview-category">{requestDetails.category}</span>
-                            <span className="preview-urgency urgency-{requestDetails.urgency?.toLowerCase()}">
+                            <span className={`preview-urgency urgency-${requestDetails.urgency?.toLowerCase()}`}>
                                 {requestDetails.urgency}
                             </span>
                         </div>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { User, ArrowLeft, MessageSquare, DollarSign, Clock, MapPin, Calendar } from 'lucide-react';
-import './MyApplications.css';
+import './MyApplicationsPage.css';
 
 const MyApplications = () => {
     const [applications, setApplications] = useState([]);

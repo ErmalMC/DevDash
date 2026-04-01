@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Wrench, Users, ShieldCheck, Star, HardHat, Search, User } from "lucide-react";
-import { isAuthenticated } from "./api/api.js";
-import "./welcome.css";
+import { isAuthenticated } from '../../shared/api/apiClient.js';
+import './WelcomePage.css';
 
 // Use Vite's environment variable syntax
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";

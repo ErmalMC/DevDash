@@ -292,6 +292,19 @@ export const isAuthenticated = () => {
     return !!localStorage.getItem("token");
 };
 
+export const getUserRole = () => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(user)?.role || null;
+    } catch {
+        return null;
+    }
+};
+
 export const clearAuth = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

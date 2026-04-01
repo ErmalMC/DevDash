@@ -1,8 +1,8 @@
 // src/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { authAPI } from "./api/api.js";
-import "./register.css"; // Reuse Register styles
+import { authAPI } from '../../shared/api/apiClient.js';
+import './AuthForm.css';
 
 export default function Login() {
     const navigate = useNavigate();

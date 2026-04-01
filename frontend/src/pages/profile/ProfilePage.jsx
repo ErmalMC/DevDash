@@ -13,6 +13,7 @@ import {
     MessageSquare,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import './ProfilePage.css';
 
 // --- Mock Data ---
 const profileData = {
@@ -136,7 +137,7 @@ const ServiceCard = ({ service }) => (
 );
 
 
-export default function Profile_page() {
+export default function ProfilePage() {
     const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
     const [applicationCount, setApplicationCount] = useState(0);
     const [requestCount, setRequestCount] = useState(0);

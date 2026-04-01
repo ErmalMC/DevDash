@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { HardHat, User, MapPin, Calendar, Clock } from "lucide-react";
-import { workerAPI, isAuthenticated } from "./api/api.js";
-import "./HandymanJobDetails.css";
+import { workerAPI, isAuthenticated } from '../../shared/api/apiClient.js';
+import './JobDetailsShared.css';
 
 const HandymanJobDetails = () => {
     const { id } = useParams(); // Get request ID from URL

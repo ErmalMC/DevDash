@@ -1,1 +1,15 @@
 .idea/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+
+# Backend
+backend/target/
+
+# OS/editor noise
+.DS_Store
+*.swp
+

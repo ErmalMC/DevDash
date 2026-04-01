@@ -18,9 +18,9 @@ import {
     Plus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { workerAPI, citizenAPI, isAuthenticated } from './api/api.js';
-import WorkerApplicationModal from './WorkerApplicationModal';
-import "./Main_page.css";
+import { workerAPI, citizenAPI, isAuthenticated } from '../../shared/api/apiClient.js';
+import WorkerApplicationModal from '../../features/applications/components/WorkerApplicationModal.jsx';
+import './MainPage.css';
 
 const categories = [
     { name: "ELECTRICIAN", displayName: "Electrician", icon: <Wrench size={16} />, sub: "All Electrician Services" },
@@ -81,7 +81,7 @@ const formatTimeAgo = (timestamp) => {
 };
 
 // --- Main Page Component ---
-export default function Main_page() {
+export default function MainPage() {
     const [problems, setProblems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
